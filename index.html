@@ -3,276 +3,550 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>คุณเป็นตัวละครสายไหนในอนิเมะ?</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>S or M? Anime Archetype Test</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;800&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            font-family: 'Prompt', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
         body {
-            font-family: 'Kanit', sans-serif;
-            background: linear-gradient(135deg, #fce7f3 0%, #ddd6fe 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
         }
-        .fade-in {
-            animation: fadeIn 0.4s ease-in-out;
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        h1 {
+            color: #e94560;
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        .subtitle {
+            color: #aeb6c4;
+            margin-bottom: 30px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        /* Quiz Header (Back Button & Progress) */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .btn-back {
+            background: transparent;
+            color: #aeb6c4;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: #e94560;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background: #2a2a40;
+            border-radius: 10px;
+            height: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #ff6b81);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            font-size: 14px;
+            color: #aeb6c4;
+            font-weight: 600;
+        }
+
+        #start-screen, #quiz-screen, #result-screen {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+        #start-screen.active, #quiz-screen.active, #result-screen.active {
+            display: block;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
+            min-height: 50px;
+        }
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .btn-option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            color: #e0e0e0;
+        }
+        .btn-option:hover {
+            background: rgba(233, 69, 96, 0.2);
+            border-color: #e94560;
+            transform: translateY(-2px);
+        }
+
+        .result-image {
+            font-size: 70px;
+            margin-bottom: 10px;
+        }
+        .sm-badge {
+            display: inline-block;
+            background: #e94560;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .result-title {
+            font-size: 38px;
+            color: #ff6b81;
+            font-weight: 800;
+            margin: 0 0 20px;
+        }
+        .result-desc {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #ddd;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: left;
+            border-left: 4px solid #e94560;
+        }
+
+        .btn-primary {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-primary:hover {
+            background: #ff6b81;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .option-btn {
-            transition: all 0.2s ease;
-        }
-        .option-btn:hover {
-            transform: scale(1.02);
-            background-color: #f3e8ff;
-            border-color: #c084fc;
-        }
-        .option-btn:active {
-            transform: scale(0.98);
-        }
     </style>
 </head>
-<body class="flex items-center justify-center p-4">
+<body>
 
-    <div id="app-container" class="bg-white rounded-3xl shadow-xl w-full max-w-2xl overflow-hidden relative min-h-[400px]">
-        
-        <!-- Start Screen -->
-        <div id="start-screen" class="p-8 md:p-12 text-center flex flex-col items-center justify-center h-full fade-in py-20">
-            <h1 class="text-3xl md:text-4xl font-bold text-purple-600 mb-4 tracking-wide">✨ คุณเป็นตัวละคร<br>สายไหนในอนิเมะ? ✨</h1>
-            <p class="text-gray-600 mb-8 text-lg">มาดูกันว่าถ้าคุณหลุดเข้าไปในโลกอนิเมะ คาแรกเตอร์ของคุณจะตกอยู่ในสายไหน (มีทั้งหมด 10 สาย!)</p>
-            <button onclick="startQuiz()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold text-xl py-4 px-12 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                เริ่มทำแบบทดสอบ 💖
-            </button>
-        </div>
-
-        <!-- Quiz Screen -->
-        <div id="quiz-screen" class="hidden p-6 md:p-10 fade-in flex-col h-full">
-            <div class="flex justify-between items-center mb-4">
-                <button id="back-btn" onclick="goBack()" class="hidden text-purple-600 bg-purple-100 hover:bg-purple-200 px-3 py-1 rounded-full text-sm font-medium transition-colors">
-                    ⬅️ ย้อนกลับ
-                </button>
-                <span class="text-sm font-medium text-purple-500 bg-purple-100 py-1 px-3 rounded-full ml-auto">ข้อที่ <span id="current-q-num">1</span> / 30</span>
-            </div>
-            
-            <!-- Progress Bar -->
-            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-8">
-                <div id="progress-bar" class="bg-gradient-to-r from-purple-400 to-pink-400 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
-            </div>
-
-            <h2 id="question-text" class="text-xl md:text-2xl font-semibold text-gray-800 mb-6 text-center leading-relaxed">
-                <!-- Question will appear here -->
-            </h2>
-
-            <div id="options-container" class="space-y-3 mt-auto">
-                <!-- Options will be generated here -->
-            </div>
-        </div>
-
-        <!-- Result Screen -->
-        <div id="result-screen" class="hidden p-8 md:p-12 text-center fade-in flex-col items-center justify-center py-16">
-            <h3 class="text-lg font-medium text-gray-500 mb-2">ผลลัพธ์ของคุณคือ...</h3>
-            <div class="text-6xl mb-4" id="result-emoji">🌸</div>
-            <h2 id="result-title" class="text-3xl md:text-4xl font-bold text-purple-700 mb-4">M ขี้อาย</h2>
-            <p id="result-desc" class="text-gray-600 text-lg mb-8 leading-relaxed">
-                <!-- Description will appear here -->
-            </p>
-            <button onclick="resetQuiz()" class="bg-purple-100 text-purple-600 font-semibold text-lg py-3 px-8 rounded-full shadow hover:bg-purple-200 transition-all">
-                🔄 ทำแบบทดสอบอีกครั้ง
-            </button>
-        </div>
-
+<div class="container">
+    <div id="start-screen" class="active">
+        <div style="font-size: 60px; margin-bottom: 15px;">⛓️🌸</div>
+        <h1>แบบทดสอบ: คุณคือคาแรกเตอร์สายไหน?<br>(วิเคราะห์ความเป็นสาย S / M)</h1>
+        <div class="subtitle">คำถาม 30 ข้อ (ข้อละ 5 ตัวเลือก) จะเจาะลึกปฏิกิริยาของคุณต่อการโดนแกล้ง การควบคุม และทัศนคติในความสัมพันธ์ เพื่อค้นหาว่าลึกๆ แล้วคุณเป็นสาย S (ชอบแกล้ง/สั่ง) หรือ สาย M (ชอบยอม/โดนแกล้ง)!</div>
+        <button class="btn-primary" onclick="startQuiz()">เริ่มทดสอบจิตใจ</button>
     </div>
 
-    <script>
-        // Data for results
-        const resultTypes = {
-            m_shy: { title: "M ขี้อาย", emoji: "🌸", desc: "โดนแซวนิดหน่อยก็เขิน มักหลบหน้า พูดติด ๆ ขัด ๆ ยิ่งโดนแซวยิ่งทำตัวไม่ถูก น่าทะนุถนอมสุดๆ" },
-            m_stubborn: { title: "M ปากแข็ง", emoji: "😤", desc: "ฟอร์มจัดมาก! ปากบอก 'ไม่ได้เป็น M ซะหน่อย!' แต่ชอบให้คนมาสนใจลึกๆ" },
-            m_tsundere: { title: "M ซึนเดเระ", emoji: "츤", desc: "ด่าเขาก่อน แต่พอเขาแกล้งกลับดันเขินตัวม้วน 'ไม่ได้ชอบให้แกล้งย่ะ! ตาบ้า!'" },
-            m_funny: { title: "M สายฮา", emoji: "😂", desc: "โดนแกล้งแล้วเล่นมุกต่อได้ ยอมเป็นตัวตลกของกลุ่ม มักทำให้ฉากดูผ่อนคลายและเป็นที่รักของเพื่อนๆ" },
-            m_serious: { title: "M สายจริงจัง", emoji: "🖤", desc: "บุคลิกสุขุม ไม่ค่อยแสดงออก ชอบให้คนอื่นเป็นฝ่ายนำสถานการณ์ เก็บซ่อนความรู้สึกเก่ง" },
-            m_challenge: { title: "M สายท้าทาย", emoji: "⚔️", desc: "ยิ่งถูกบอกว่า 'ทำไม่ได้' ยิ่งอยากลอง ชอบสถานการณ์ที่เสียเปรียบแล้วต้องเอาชนะ เลือดนักสู้พลุ่งพล่าน!" },
-            m_bullied: { title: "M สายโดนแกล้ง", emoji: "😭", desc: "มักเป็นเป้าหมายประจำของเพื่อน โดนแกล้งซ้ำ ๆ จนกลายเป็นมุกประจำกลุ่ม แต่ลึกๆ ก็ชอบแหละ" },
-            m_follower: { title: "M สายตามผู้นำ", emoji: "🎀", desc: "ชอบให้คนอื่นที่มั่นใจกว่าเป็นคนตัดสินใจ ตัวเองทำหน้าที่สนับสนุนและพร้อมเดินตามอย่างว่าง่าย" },
-            m_unlucky: { title: "M สายซวย", emoji: "💀", desc: "ไม่ได้ตั้งใจจะเป็น M แต่เรื่องราวมักพาไปเจอสถานการณ์ที่โดนแกล้งหรือแจ็คพอตแตกตลอดเวลา สู้ๆ นะ!" },
-            horny: { title: "สายหื่น", emoji: "🔥", desc: "สนใจเรื่องอย่างว่า มักเล่นมุกสองแง่สองง่าม หรือแสดงความสนใจออกมาค่อนข้างชัดเจน แอบร้ายนะเรา" },
-            psycho: { title: "สายโรคจิต", emoji: "🔪", desc: "หมกมุ่น ยึดติด หวงแหน คลั่งรักแบบสุดโต่ง ไม่ค่อยแคร์ขอบเขตของคนอื่น ยันเดเระนิดๆ อันตรายหน่อยๆ" }
-        };
+    <div id="quiz-screen">
+        <div class="quiz-header">
+            <button class="btn-back" onclick="goBack()">◀ ย้อนกลับ</button>
+            <div class="progress-text" id="progress-text">ข้อที่ 1 / 30</div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="question-text" id="question-text">คำถามจะแสดงที่นี่</div>
+        <div class="options-grid" id="options-container"></div>
+    </div>
 
-        // 30 Questions mapped to categories
-        const questions = [
-            { q: "1. เมื่อเพื่อนแซวคุณว่าแอบชอบใครอยู่ คุณจะ...", 
-              options: [{text: "หน้าแดง ทำตัวไม่ถูก หาทางหนี", type: "m_shy"}, {text: "โวยวาย 'ไม่ได้ชอบเว้ย! อย่ามามั่ว!'", type: "m_stubborn"}, {text: "ชกไหล่คนแซว 'บ้า! ใครชอบตาบั่นนั่นกันล่ะ!' แต่หน้าแดง", type: "m_tsundere"}, {text: "นั่งนิ่งๆ ปล่อยให้แซวไป ไม่สะทกสะท้าน", type: "m_serious"}] },
-            { q: "2. เวลาทำงานกลุ่ม หน้าที่ของคุณคือ?", 
-              options: [{text: "แล้วแต่หัวหน้าสั่งเลย พร้อมทำตาม", type: "m_follower"}, {text: "รับงานที่ยากที่สุด เพื่อพิสูจน์ตัวเอง", type: "m_challenge"}, {text: "คนที่โดนโยนงานให้เยอะที่สุดตลอด", type: "m_bullied"}, {text: "แอบสืบข้อมูลส่วนตัวของคนในกลุ่มว่าแอบอู้ไหม", type: "psycho"}] },
-            { q: "3. ถ้าบังเอิญเจอคนที่แอบชอบเดินมาทางนี้ คุณจะ...", 
-              options: [{text: "แอบมองรูปร่างหน้าตาแบบเน้นๆ", type: "horny"}, {text: "หลบหลังเสา ไม่กล้าสบตา", type: "m_shy"}, {text: "ทำเป็นเมิน เดินเชิดๆ ผ่านไป", type: "m_stubborn"}, {text: "แกล้งเดินชนแล้วด่า 'เดินดูทางบ้างสิยะ!'", type: "m_tsundere"}] },
-            { q: "4. เดินสะดุดล้มกลางโรงอาหาร คุณจะทำอย่างไร?", 
-              options: [{text: "ทำไมซวยแบบนี้เนี่ย บาดเจ็บอีกแล้ว", type: "m_unlucky"}, {text: "ลุกขึ้นมาโพสท่าฮาๆ กลบเกลื่อน", type: "m_funny"}, {text: "เพื่อนขำหนักมาก และคุณก็โดนล้อไปอีกนาน", type: "m_bullied"}, {text: "ปัดฝุ่นเงียบๆ แล้วเดินต่อเหมือนไม่มีอะไรเกิดขึ้น", type: "m_serious"}] },
-            { q: "5. เพื่อนท้าให้เล่นเกมที่คุณเล่นไม่เก่งเลย คุณจะ...", 
-              options: [{text: "รับคำท้า! ยิ่งแพ้ยิ่งอยากเอาชนะ", type: "m_challenge"}, {text: "'ไม่ได้อยากเล่นหรอกนะ แค่สงสารกลัวไม่มีคนเล่นด้วย'", type: "m_tsundere"}, {text: "แพ้รวดจนกลายเป็นสนามอารมณ์ของเพื่อน", type: "m_bullied"}, {text: "แพ้ตั้งแต่ตายังไม่เริ่ม เครื่องดับ เน็ตหลุด", type: "m_unlucky"}] },
-            { q: "6. ถ้าเพื่อนสนิทลืมวันเกิดของคุณ...", 
-              options: [{text: "งอนหนักมาก แต่ปากบอกไม่เป็นไร", type: "m_stubborn"}, {text: "แอบร้องไห้คนเดียวเงียบๆ", type: "m_shy"}, {text: "เก็บไว้เป็นบัญชีแค้น แอบตามสืบว่าไปทำอะไรมาถึงลืม", type: "psycho"}, {text: "ไม่ซีเรียส เดี๋ยวพรุ่งนี้ทวงย้อนหลังเอาฮา", type: "m_funny"}] },
-            { q: "7. โดนทำโทษให้เต้นท่าแปลกๆ หน้าห้อง", 
-              options: [{text: "เต้นจัดเต็มเกินเบอร์ หวังให้คนขำ", type: "m_funny"}, {text: "'ฝากไว้ก่อนเถอะ พวกบ้า!' เต้นไปด่าไป", type: "m_tsundere"}, {text: "เต้นไปยั่วๆ บดๆ เผื่อมีคนชอบ", type: "horny"}, {text: "เต้นผิดจังหวะ สะดุดล้มตอนจบพอดี", type: "m_unlucky"}] },
-            { q: "8. เวลาไปเที่ยวกับแก๊งเพื่อน ใครเป็นคนวางแผน?", 
-              options: [{text: "ใครจัดก็ไปหมดแหละ เดินตามอย่างเดียว", type: "m_follower"}, {text: "คนอื่นจัด เราเป็นฝ่ายโดนเทให้อยู่เฝ้าของตลอด", type: "m_unlucky"}, {text: "วางแผนเอง รัดกุม ตรงเวลาเป๊ะ", type: "m_serious"}, {text: "จัดทริปไปที่แปลกๆ ท้าทายขีดจำกัด", type: "m_challenge"}] },
-            { q: "9. มีคนมาสารภาพรักกับคุณ แต่คุณไม่ได้ชอบเขา", 
-              options: [{text: "ปฏิเสธด้วยการกวนโอ๊ยกลับไป", type: "m_funny"}, {text: "ปฏิเสธแบบเย็นชา สั้นๆ 'ไม่ล่ะ'", type: "m_serious"}, {text: "เขินจนทำอะไรไม่ถูก พูดขอโทษซ้ำๆ", type: "m_shy"}, {text: "โดนเพื่อนล้อเรื่องนี้ไปอีกสามเดือนเต็ม", type: "m_bullied"}] },
-            { q: "10. คุณชอบตัวละครอนิเมะแบบไหน?", 
-              options: [{text: "ตัวที่หุ่นแซ่บๆ เซอร์วิสเยอะๆ", type: "horny"}, {text: "ตัวร้ายที่โรคจิตๆ มีปมลึกๆ ร้ายลึกๆ", type: "psycho"}, {text: "ตัวเอกที่เก่งๆ เป็นผู้นำ เราอยากคอยซัพพอร์ต", type: "m_follower"}, {text: "ตัวที่ปากร้ายใจดี ซึนเดเระเหมือนเรา(?)", type: "m_tsundere"}] },
-            { q: "11. เพื่อนแกล้งเอาขนมของคุณไปซ่อน", 
-              options: [{text: "โวยวายเอาคืนมานะ! ฟอร์มจัด", type: "m_stubborn"}, {text: "โดนแกล้งจนชิน ปล่อยเบลอ", type: "m_bullied"}, {text: "ท้าแข่งเกม ใครชนะได้ขนมไป", type: "m_challenge"}, {text: "สืบจนรู้ว่าซ่อนที่ไหน แล้วแอบเอากรรไกรไปตัดเสื้อเพื่อน", type: "psycho"}] },
-            { q: "12. อาจารย์เรียกตอบคำถามที่คุณไม่รู้คำตอบ", 
-              options: [{text: "ยืนอ้ำอึ้ง หน้าแดง มือสั่น", type: "m_shy"}, {text: "ตอบมั่วๆ เอาฮาเข้าว่า", type: "m_funny"}, {text: "เพิ่งก้มหน้าหลบตา แต่อาจารย์ก็เรียกพอดี", type: "m_unlucky"}, {text: "ตอบไม่ได้ก็ยืนนิ่งๆ รับสภาพไป", type: "m_serious"}] },
-            { q: "13. อยู่ในห้องน้ำแล้วทิชชู่หมด", 
-              options: [{text: "นี่มันวันซวยอะไรของฉันเนี่ย!", type: "m_unlucky"}, {text: "ตะโกนขอความช่วยเหลือแบบไม่อายใคร", type: "m_funny"}, {text: "รอจนกว่าจะมีคนเดินเข้ามาแล้วค่อยให้ช่วย", type: "m_follower"}, {text: "หาทางเอาตัวรอดด้วยวิธีสุดท้าทาย", type: "m_challenge"}] },
-            { q: "14. เห็นคนที่ชอบทำของตก คุณจะ...", 
-              options: [{text: "แอบเก็บไปสูดดมกลิ่น และไม่คืน", type: "psycho"}, {text: "เก็บไปคืนพร้อมส่งสายตาแพรวพราว", type: "horny"}, {text: "เก็บคืนให้แบบนิ่งๆ ไม่พูดอะไร", type: "m_serious"}, {text: "โยนคืนให้ 'หัดรักษาของบ้างสิยะ!'", type: "m_tsundere"}] },
-            { q: "15. เพื่อนจับได้ว่าคุณดูซีรีส์/อนิเมะแนว 18+", 
-              options: [{text: "ยืดอกรับ 'ก็ของมันดีอะ ใครๆก็ดูปะ?'", type: "horny"}, {text: "ลนลาน ปฏิเสธเสียงหลง", type: "m_shy"}, {text: "แถว่ากดผิด ไม่ได้ตั้งใจจะดูเว้ย!", type: "m_stubborn"}, {text: "คุณเป็นเป้าหมายโดนล้อเรื่องนี้ไปตลอดปี", type: "m_bullied"}] },
-            { q: "16. เมื่อต้องเป็นหัวหน้าห้อง", 
-              options: [{text: "ทำไม่ได้หรอก ให้คนอื่นทำเถอะ ขอตามดีกว่า", type: "m_follower"}, {text: "รับผิดชอบเต็มที่ วางแผนเป๊ะ", type: "m_serious"}, {text: "โดนเพื่อนโหวตแกล้งให้เป็นแบบงงๆ", type: "m_bullied"}, {text: "ได้ตำแหน่งมาเพราะจับฉลากได้ (ซวยจัด)", type: "m_unlucky"}] },
-            { q: "17. ไปสวนสนุก คุณจะเล่นเครื่องเล่นอะไร?", 
-              options: [{text: "รถไฟเหาะตีลังกาที่น่ากลัวที่สุด!", type: "m_challenge"}, {text: "เพื่อนลากไปเล่นอะไรก็เล่นตามนั้น", type: "m_follower"}, {text: "ม้าหมุน หรืออะไรที่ไม่น่ากลัว (เขิน)", type: "m_shy"}, {text: "'ไม่อยากเล่นหรอกนะ แต่เพื่อนบังคับ!'", type: "m_tsundere"}] },
-            { q: "18. เพื่อนวิจารณ์เสื้อผ้าที่คุณใส่", 
-              options: [{text: "'หุบปากไปเลย!' (แต่พรุ่งนี้ไม่ใส่ตัวนี้ละ)", type: "m_stubborn"}, {text: "เล่นมุกว่านี่คือแฟชั่นล้ำยุคจากอนาคต", type: "m_funny"}, {text: "แอบจดชื่อเพื่อนลงบัญชีดำในใจ", type: "psycho"}, {text: "เสียความมั่นใจ ยืนหงอย โดนแกล้งประจำ", type: "m_bullied"}] },
-            { q: "19. ฝนตกหนักและคุณลืมเอาร่มมา", 
-              options: [{text: "เดินตากฝนเปียกๆ เท่ๆ ไปเลย", type: "m_serious"}, {text: "วิ่งหลบฝนแต่ดันล้มโคลนกระเด็นใส่ (ซวยสุด)", type: "m_unlucky"}, {text: "รอขอติดร่มเพื่อนไปอย่างสงบเจียมตัว", type: "m_follower"}, {text: "ท้าวิ่งแข่งกับเพื่อนฝ่าพายุฝน", type: "m_challenge"}] },
-            { q: "20. คุณชอบฟังเพลงแนวไหนเวลาอยู่คนเดียว?", 
-              options: [{text: "เพลงรักที่จินตนาการถึงหน้าใครบางคนจนคลั่ง", type: "psycho"}, {text: "เพลงที่มีจังหวะยั่วยวน เซ็กซี่ๆ", type: "horny"}, {text: "เพลงเศร้าๆ บิ๊วอารมณ์ให้ตัวเองร้องไห้", type: "m_shy"}, {text: "เพลงอะไรก็ได้ที่กำลังฮิต (ตามเทรนด์เพื่อน)", type: "m_follower"}] },
-            { q: "21. โดนเพื่อนทิ้งให้อยู่เฝ้ากระเป๋า", 
-              options: [{text: "นั่งเฝ้าเงียบๆ ชินแล้วโดนประจำนี่แหละเรา", type: "m_bullied"}, {text: "บ่นกระปอดกระแปดแต่ก็เฝ้าให้ฟอร์มๆ", type: "m_stubborn"}, {text: "รื้อดูกระเป๋าเพื่อนเล่นๆ (แอบอยากรู้ความลับ)", type: "psycho"}, {text: "นั่งเฝ้าจนหลับ เพื่อนก็ไม่กลับมาสักที ทิ้งไว้กลางทาง", type: "m_unlucky"}] },
-            { q: "22. เมื่อเจอสุนัขดุเห่าใส่", 
-              options: [{text: "วิ่งหนีสุดชีวิต แต่สะดุดล้มหน้าคะมำ", type: "m_unlucky"}, {text: "ยืนจ้องตา ท้าทายกลับ ใครกระพริบตาก่อนแพ้", type: "m_challenge"}, {text: "หลบหลังเพื่อน ให้เพื่อนรับหน้าแทน", type: "m_follower"}, {text: "เห่ากลับ เอาให้ฮา เพื่อนขำกลิ้ง", type: "m_funny"}] },
-            { q: "23. ทะเลาะกับเพื่อนสนิท คุณจะ...", 
-              options: [{text: "'ชิ! ใครจะไปง้อก่อนล่ะ!' (แต่เดินป้วนเปี้ยนใกล้ๆ)", type: "m_tsundere"}, {text: "ใช้เหตุผลคุยกันตรงๆ นิ่งๆ เคลียร์ใจ", type: "m_serious"}, {text: "ทำตัวตลกๆ ง้อด้วยมุกฮาๆ ให้บรรยากาศดีขึ้น", type: "m_funny"}, {text: "ตามสืบว่าเพื่อนไปบ่นเรื่องเราให้ใครฟังไหม จะได้ไปจัดการ", type: "psycho"}] },
-            { q: "24. เพื่อนแอบถ่ายรูปหลุดของคุณตอนหลับ", 
-              options: [{text: "อ้อนวอนขอให้ลบเถอะนะ ปิดหน้าเขินอาย", type: "m_shy"}, {text: "โดนเอาไปทำมีมประจำกลุ่ม และโดนแซวทั้งเทอม", type: "m_bullied"}, {text: "โพสต์ท่าต่อหน้ากล้องไปเลยตอนตื่น เอาให้เซ็กซี่", type: "horny"}, {text: "ท้าว่าถ้าไม่ลบ เจอรูปหลุดคืนแน่ ศึกล้างแค้นเริ่ม!", type: "m_challenge"}] },
-            { q: "25. ถ้าได้เกิดใหม่ในต่างโลก", 
-              options: [{text: "ขอเป็นลูกน้องผู้กล้า สบายดี ไม่ต้องคิดเยอะ", type: "m_follower"}, {text: "เกิดใหม่ทั้งที ขอฮาเร็มสาว/หนุ่ม! เซอร์วิสรัวๆ", type: "horny"}, {text: "เกิดเป็นชาวบ้านธรรมดาที่โดนก็อบลินตีตายตั้งแต่ตอนแรก", type: "m_unlucky"}, {text: "เป็นนักรบเงียบขรึม สุดเท่ ยืนกอดอกมุมห้อง", type: "m_serious"}] },
-            { q: "26. เพื่อนชวนไปกินข้าวร้านแพงๆ แต่ตังค์ไม่พอ", 
-              options: [{text: "บอกไปตรงๆ ว่าไม่มีตังค์ ยืมหน่อยดิเพื่อนรัก", type: "m_funny"}, {text: "แกล้งบอกว่า 'ไม่อยากกินหรอกร้านนี้ ไร้สาระ!'", type: "m_stubborn"}, {text: "โดนเพื่อนลากไปแล้วสุดท้ายต้องล้างจานใช้หนี้", type: "m_unlucky"}, {text: "ไม่ไป ปฏิเสธเด็ดขาด เด็ดเดี่ยวมาก", type: "m_serious"}] },
-            { q: "27. คุณมีของสะสมอะไร?", 
-              options: [{text: "รูปถ่ายของคนที่ชอบ (ที่แอบถ่ายมาทีละใบ)", type: "psycho"}, {text: "โดจิน/ฟิกเกอร์สาย 18+ ซ่อนไว้ใต้เตียง", type: "horny"}, {text: "ของแปลกๆ ที่ท้าให้ตัวเองปีนเขาไปหามาได้", type: "m_challenge"}, {text: "ไม่มีเลย เพื่อนสะสมอะไรก็ซื้อตามบ้าง", type: "m_follower"}] },
-            { q: "28. เพื่อนทักว่าอ้วนขึ้นนะ", 
-              options: [{text: "ทำหน้าจะร้องไห้ เสียเซลฟ์หนักมาก", type: "m_shy"}, {text: "'ตาบอดป่าว เสื้อตัวนี้มันพองย่ะ!'", type: "m_tsundere"}, {text: "ก็ของกินมันอร่อยอ่ะ ลูบพุงโชว์เลย", type: "m_funny"}, {text: "โดนล้อเรื่องน้ำหนักยันลูกบวช เป็นเหยื่อตลอด", type: "m_bullied"}] },
-            { q: "29. เมื่อเจอแมลงสาบในห้อง", 
-              options: [{text: "หยิบอาวุธขึ้นมา สู้กับมัน! ตาต่อตา ฟันต่อฟัน", type: "m_challenge"}, {text: "วิ่งหนีไปเกาะหลังคนอื่น ร้องเสียงหลง", type: "m_follower"}, {text: "จับมันไปใส่กระเป๋าเพื่อน แผนชั่วร้าย", type: "psycho"}, {text: "ตีพลาด ของตกแตกเต็มห้อง แมลงสาบรอด(ซวย)", type: "m_unlucky"}] },
-            { q: "30. คำพูดติดปากของคุณคือ?", 
-              options: [{text: "'เปล่าสักหน่อย! อย่ามามั่ว!'", type: "m_stubborn"}, {text: "'หึ... ช่างเถอะ' (นิ่งๆ คูลๆ)", type: "m_serious"}, {text: "'ไม่ได้ชอบให้แกล้งหรอกนะ ตาบ้า!'", type: "m_tsundere"}, {text: "'แฮ่ๆ / อุ๊ยตาย' (แนวฮา/หื่นนิดๆ)", type: "horny"}] }
-        ];
+    <div id="result-screen">
+        <div class="result-image" id="result-icon">✨</div>
+        <div class="sm-badge" id="result-sm">สาย M / สาย S</div>
+        <div style="font-size: 16px; color: #aeb6c4;">บุคลิกที่ซ่อนอยู่ของคุณคือ...</div>
+        <div class="result-title" id="result-name">Tsundere</div>
+        <div class="result-desc" id="result-desc">คำอธิบาย</div>
+        <button class="btn-primary" onclick="location.reload()">ทดสอบอีกครั้ง</button>
+    </div>
+</div>
 
-        let currentQuestionIndex = 0;
-        let userAnswers = [];
+<script>
+    // ฐานข้อมูล 30 คาแรกเตอร์ พร้อมการจัดหมวดหมู่ S/M
+    const resultData = {
+        "Sadodere": { icon: "😈", sm: "🔥 สาย S ตัวพ่อ/ตัวแม่ (Sadist)", desc: "ซาดะเดเระ! คุณมีความสุขที่สุดเวลาได้แกล้ง ได้ปั่นหัว หรือเห็นคนที่คุณชอบทำตัวไม่ถูก ยิ่งเห็นเขาเขินหรือน้ำตาคลอ คุณยิ่งรู้สึกเอ็นดูและมีอำนาจเหนือกว่า" },
+        "Kamidere": { icon: "👑", sm: "🔥 สาย S ระดับพระเจ้า (Dominant)", desc: "คามิเดเระ! คุณมั่นใจในตัวเองขั้นสุด มองว่าตัวเองเหนือกว่าใคร ชอบออกคำสั่งและอยากให้ทุกคนยอมจำนนต่อคุณ ไม่มีความเป็น M อยู่ในตัวแม้แต่น้อย" },
+        "Himedere": { icon: "👸", sm: "🔥 สาย S สายสั่ง (Princess/Prince)", desc: "ฮิเมเดเระ! คุณอยากได้รับการปฏิบัติเหมือนเป็นเจ้าหญิง/เจ้าชาย คาดหวังให้คนอื่นคอยเอาใจและรับใช้คุณ คุณชอบเป็นฝ่ายควบคุมความสัมพันธ์" },
+        "Oujidere": { icon: "🤴", sm: "🔥 สาย S ผู้สูงส่ง (Prince)", desc: "โอจิเดเระ! คุณมีความสง่างามและเย่อหยิ่งนิดๆ ชอบเป็นผู้นำและอยากให้คนอื่นมองคุณด้วยความเคารพหรือยอมทำตามที่คุณต้องการ" },
+        "Yandere": { icon: "🔪", sm: "⚠️ สาย S ที่คลั่งรักจนน่ากลัว", desc: "ยันเดเระ! ความรักของคุณรุนแรงและมีสิทธิ์ขาด คุณอยากควบคุมชีวิตของคนที่คุณรักทั้งหมด ไม่ยอมให้ใครหน้าไหนมาแย่งไป ถ้าหึงขึ้นมาละก็... น่ากลัวสุดๆ" },
+        "Mayadere": { icon: "⚔️", sm: "⚖️ สาย S ที่ยอมจำนนให้กับความรัก", desc: "มายาเดเระ! เริ่มต้นคุณเป็นศัตรูหรือคนหัวรั้นที่ไม่ยอมใครง่ายๆ แต่พอตกหลุมรัก คุณจะเริ่มอ่อนลง แม้จะยังปากดีแต่ลึกๆ ก็ยอมแพ้ให้กับเขาแล้ว" },
+        "Tsundere": { icon: "💢", sm: "⚖️ ภายนอก S แต่ภายในแอบ M", desc: "ซึนเดเระ! ปากแข็ง ปากไม่ตรงกับใจ ภายนอกชอบทำดุ แกล้งด่า หรือปฏิเสธเพื่อกลบเกลื่อนความเขิน แต่พอโดนเขารุกหนักๆ เข้า คุณก็ไปไม่เป็นและพร้อมยอมเขาอยู่ดี" },
+        "Kuudere": { icon: "❄️", sm: "⚖️ สาย N (Neutral / ไม่อินกับ S/M)", desc: "คูเดเระ! เย็นชา สุขุม นิ่งสงบ คุณควบคุมอารมณ์ตัวเองได้ดีเยี่ยม ไม่ชอบแกล้งใครและไม่ชอบโดนแกล้ง แต่จะแสดงมุมอ่อนโยนให้แค่คนพิเศษเห็นเท่านั้น" },
+        "Cool Beauty": { icon: "✨", sm: "⚖️ สาย N (สวยเริ่ดเชิดหยิ่ง)", desc: "คูลบิวตี้! คุณสมบูรณ์แบบจนคนรอบข้างเกรงใจ คุณมักจะเป็นฝ่ายคุมสถานการณ์ด้วยความนิ่ง แต่ไม่ได้เสพติดการทรมานใคร" },
+        "Ojou-sama": { icon: "☕", sm: "🔥 สาย S (แบบมีระดับ)", desc: "โอโจซามะ! คุณหนูผู้มีมารยาท (และแอบติดหรู) คาดหวังให้คนอื่นดูแลคุณอย่างดี คุณชอบเป็นฝ่ายรับความสะดวกสบายมากกว่าเป็นผู้ให้" },
+        "Onee-san": { icon: "🌹", sm: "🔥 สาย S แบบละมุน (Mommy/Daddy energy)", desc: "โอเน่ซัง! คุณเป็นผู้ใหญ่ ใจเย็น ชอบดูแลคนอื่น แต่เป็นการดูแลที่มาพร้อมกับการเป็นผู้นำ คุณชอบเห็นอีกฝ่ายอ้อนหรือพึ่งพาคุณ" },
+        "Tomboy": { icon: "⚽", sm: "⚖️ สาย N (ชอบปกป้อง)", desc: "ทอมบอย! ห้าว ลุย เป็นที่พึ่งพาได้ คุณไม่มีความ S หรือ M ชัดเจน เน้นความสัมพันธ์แบบเพื่อนฝูงที่ลุยไปด้วยกันมากกว่า" },
+        "Gyaru": { icon: "💅", sm: "⚖️ สาย N / แอบ S นิดๆ", desc: "แกล! คุณแฟชั่นจัดจ้าน เข้าสังคมเก่ง เฟรนด์ลี่ ชอบแซวเพื่อนๆ แต่ไม่ได้ถึงขั้นโรคจิต เป็นความร่าเริงแบบตรงไปตรงมา" },
+        "Genki": { icon: "☀️", sm: "⚖️ สาย N (พลังงานบวกล้นหลาม)", desc: "เก็งกิ! คุณร่าเริงและไฮเปอร์สุดๆ โฟกัสไปที่ความสนุกสนาน ไม่ค่อยสนใจเรื่องการควบคุมหรือการยอมจำนน" },
+        "Deredere": { icon: "💖", sm: "⚖️ สาย N (คลั่งรักสายสว่าง)", desc: "เดเระเดเระ! รักแบบสดใส แสดงความรู้สึกตรงไปตรงมา ไม่เล่นตัว ไม่เรียกร้องอะไรที่มากเกินไป แค่ได้อยู่ใกล้ๆ ก็พอใจแล้ว" },
+        "Nyandere": { icon: "🐱", sm: "⚖️ สาย N (เอาแต่ใจเหมือนแมว)", desc: "เนียนเดเระ! อ้อนบ้าง หยิ่งบ้าง เดาใจยากสุดๆ บางทีก็อยากให้เขาลูบหัว (แอบ M) บางทีก็ข่วนเขา (แอบ S)" },
+        "Chuunibyou": { icon: "🌌", sm: "⚖️ สาย N (อยู่ในโลกส่วนตัว)", desc: "จูนิเบียว! คุณสนใจเวทมนตร์ พลังมืด หรือจินตนาการของตัวเองมากกว่าเรื่อง S/M ในความสัมพันธ์จริงๆ" },
+        "Mysterious": { icon: "🌙", sm: "⚖️ สาย N (อ่านใจยาก)", desc: "ลึกลับ! คุณเก็บซ่อนความรู้สึกและเรื่องราวของตัวเองไว้ ไม่แสดงออกชัดเจนว่าคุมเกมหรือยอมจำนน" },
+        "Darudere": { icon: "😴", sm: "🎀 สาย M สายขี้เกียจ", desc: "ดารุเดเระ! คุณขี้เกียจเกินกว่าจะเป็นฝ่าย S คอยคุมใคร คุณมักจะปล่อยเลยตามเลย ยอมๆ ไปเถอะจะได้จบๆ ไม่ต้องเหนื่อย" },
+        "Dorodere": { icon: "🖤", sm: "🔥 สาย S ซ่อนรูป", desc: "โดโรเดเระ! ภายนอกแสนดีและอ่อนโยน แต่ข้างในมีความอิจฉา รุนแรง หรือแอบแช่งคนอื่นอยู่ คุณชอบปั่นหัวคนอื่นเนียนๆ ร้ายลึกตัวจริง" },
+        "Shundere": { icon: "🌧️", sm: "🎀 สาย M ที่ต้องการการเยียวยา", desc: "ชุนเดเระ! คุณมักจะซึมเศร้า หม่นหมอง คุณต้องการใครสักคนมาเป็นผู้นำและดึงคุณขึ้นมาจากความเศร้า คุณยอมให้เขาคุมชีวิตคุณได้ถ้าเขาทำให้คุณมีความสุข" },
+        "Utsudere": { icon: "🥀", sm: "🎀 สาย M ผู้แบกรับบาดแผล", desc: "อุตสึเดเระ! คุณมีความสิ้นหวังหรือปมในใจ มักจะรู้สึกว่าตัวเองไร้ค่า ยอมให้คนอื่นกระทำหรือโอนอ่อนตามคนอื่นได้ง่าย" },
+        "Bakadere": { icon: "🤪", sm: "🎀 สาย M (มักโดนแกล้ง)", desc: "บาคะเดเระ! คุณซื่อบื้อ เปิ่น และมักจะตามคนอื่นไม่ค่อยทัน ทำให้คุณมักจะตกเป็นเป้าหมายของการโดนแกล้งหรือโดนแซวบ่อยๆ (และคุณก็ไม่ค่อยโกรธด้วย)" },
+        "Airhead": { icon: "☁️", sm: "🎀 สาย M (แบบไม่รู้ตัว)", desc: "แอร์เฮด! คุณหัวอ่อน คิดอะไรง่ายๆ ใครชักจูงไปไหนก็ไปตามเขา โดนหลอกง่ายสุดๆ" },
+        "Dojikko": { icon: "💫", sm: "🎀 สาย M (น่าทะนุถนอม)", desc: "โดจิกโกะ! คุณซุ่มซ่าม ทำของพังบ่อยๆ จนต้องให้คนอื่นคอยดูแลและตามเช็ดตามล้างให้ เป็นเหยื่อชั้นดีของพวกสาย S ที่ชอบเอ็นดูคนซุ่มซ่าม" },
+        "Dandere": { icon: "🌸", sm: "🎀 สาย M ขี้อาย", desc: "ดันเดเระ! คุณเงียบและไม่กล้าพูดขัดใจใคร มักจะเป็นผู้ตามที่ดี โอนอ่อนผ่อนตามคนอื่นเพราะไม่อยากให้เกิดความขัดแย้ง" },
+        "Hajidere": { icon: "😳", sm: "🎀 สาย M อาการหนัก (ประหม่าจัด)", desc: "ฮาจิเดเระ! คุณเขินหนักมากเวลาเจอคนที่ชอบ แค่เขามองมาคุณก็สั่นไปทั้งตัว ไม่มีทางไปควบคุมใครเขาได้หรอก มีแต่จะโดนเขาคุม!" },
+        "Kekkondere": { icon: "💍", sm: "🎀 สาย M (ยอมถวายชีวิตให้การแต่งงาน)", desc: "เค็กคงเดเระ! คุณคลั่งไคล้การสร้างครอบครัว คุณพร้อมจะรับบทเป็นแม่บ้าน/พ่อบ้านที่ยอมทำทุกอย่างเพื่อรักษาความสัมพันธ์นี้ไว้" },
+        "Megadere": { icon: "🤩", sm: "🎀 สาย M ทาสรัก (Fanclub)", desc: "เมกาเดเระ! คุณมองคนที่ชอบเป็นไอดอล เทิดทูนบูชาสุดหัวใจ เขาจะชี้นกเป็นนก ชี้ไม้เป็นไม้ คุณก็พร้อมพยักหน้าและสนับสนุนเขาทุกอย่าง" },
+        "Goudere": { icon: "💪", sm: "🎀 สาย M ถวายหัว (ยอมทำเรื่องบ้าๆ เพื่อเธอ)", desc: "โกเดเระ! เพื่อคนที่คุณรัก คุณพร้อมทำทุกอย่างแม้ว่าคำสั่งนั้นจะไร้สาระหรือยากลำบากแค่ไหน คุณมีความสุขที่ได้ทำตามความปรารถนาของเขา" },
+        "Undere": { icon: "💗", sm: "🎀 สาย M เต็มรูปแบบ (Submissive)", desc: "อันเดเระ! สาย M ตัวจริงเสียงจริง! คุณตอบ 'ได้สิ' หรือ 'อืม' กับคนที่คุณชอบเสมอ คุณโอนอ่อนตามใจเขาทุกอย่างจนแทบจะสูญเสียความเป็นตัวเองไปเลยทีเดียว" }
+    };
 
-        const startScreen = document.getElementById('start-screen');
-        const quizScreen = document.getElementById('quiz-screen');
-        const resultScreen = document.getElementById('result-screen');
+    // คำถาม 30 ข้อ (ข้อละ 5 ตัวเลือก)
+    const questions = [
+        { q: "1. ถ้าคนที่คุณแอบชอบสั่งให้คุณเห่าเป็นหมากลางที่สาธารณะ?", opts: [
+            { t: "หน้าแดงจัด แล้วเห่าเบาๆ 'โฮ่ง...'", traits: ["Undere", "Goudere"] },
+            { t: "ด่ากลับ 'บ้าไปแล้วหรอ! ไปทำเองสิยะ!'", traits: ["Tsundere", "Kamidere"] },
+            { t: "ยืนนิ่งๆ มองเขาด้วยสายตาสมเพช", traits: ["Kuudere", "Cool Beauty"] },
+            { t: "ยิ้มกว้าง 'ถ้าฉันทำ นายต้องเลี้ยงข้าวฉันนะ!'", traits: ["Genki", "Nyandere"] },
+            { t: "แกล้งทำเป็นเห่า แล้วจู่ๆ ก็พุ่งไปงับมือเขาเบาๆ!", traits: ["Sadodere", "Nyandere"] }
+        ]},
+        { q: "2. เมื่อมีคนมาแกล้งแซวคุณแรงๆ ต่อหน้าเพื่อน?", opts: [
+            { t: "เขินจนทำอะไรไม่ถูก อยากแทรกแผ่นดินหนี", traits: ["Hajidere", "Dandere"] },
+            { t: "แกล้งคืนแรงกว่าเป็นสองเท่า เอาให้อับอายไปเลย", traits: ["Sadodere", "Dorodere"] },
+            { t: "ยิ้มซื่อๆ 'เอ๊ะ ฉันเป็นแบบนั้นหรอ?' (ไม่รู้ตัวว่าโดนแกล้ง)", traits: ["Bakadere", "Airhead"] },
+            { t: "เชิดใส่ 'ระดับฉันไม่สะทกสะท้านกับคำพูดพวกนี้หรอก'", traits: ["Ojou-sama", "Himedere"] },
+            { t: "ยิ้มมุมปากเบาๆ 'กล้าดีนี่... เดี๋ยวรู้เลยว่าใครจะโดนแกล้ง'", traits: ["Dorodere", "Sadodere"] }
+        ]},
+        { q: "3. ในการทำงานกลุ่ม คุณมักจะรับบทบาทไหน?", opts: [
+            { t: "คนสั่งการ 'พวกนายทำนี่ ส่วนเธอทำนั่น'", traits: ["Kamidere", "Oujidere"] },
+            { t: "คนทำตาม 'บอกมาเลยว่าให้ทำอะไร ฉันทำได้หมด'", traits: ["Undere", "Dandere"] },
+            { t: "คนที่บอกว่า 'เดี๋ยวพี่ทำส่วนที่ยากให้เอง'", traits: ["Onee-san", "Tomboy"] },
+            { t: "คนที่ไม่ค่อยได้ทำอะไร แล้วพึ่งพาเพื่อน (ขี้เกียจ)", traits: ["Darudere", "Dojikko"] },
+            { t: "คอยเชียร์เพื่อนอยู่ห่างๆ 'สู้ๆ นะทุกคน!' แต่ตัวเองไม่ค่อยลงมือ", traits: ["Genki", "Megadere"] }
+        ]},
+        { q: "4. แฟนของคุณบอกว่า 'วันนี้แต่งตัวไม่สวย/ไม่หล่อเลยนะ'?", opts: [
+            { t: "'อะไรนะ!? งั้นก็ไม่ต้องเดินด้วยกันเลย!'", traits: ["Tsundere", "Mayadere"] },
+            { t: "น้ำตาคลอ 'ขอโทษนะ ฉันจะรีบไปเปลี่ยนเดี๋ยวนี้แหละ'", traits: ["Shundere", "Utsudere"] },
+            { t: "'หึๆ งั้นฉันจะจับนายมาแต่งตัวบ้าง' (เตรียมแก้แค้น)", traits: ["Sadodere", "Yandere"] },
+            { t: "ไม่สน 'ฉันแต่งเพราะฉันชอบ จบนะ'", traits: ["Gyaru", "Kuudere"] },
+            { t: "'งั้นหรอ... แล้วเธอชอบให้ฉันแต่งแบบไหนล่ะ?'", traits: ["Undere", "Goudere"] }
+        ]},
+        { q: "5. ถ้ามีคนบังคับให้คุณใส่ชุดเมด/ชุดพ่อบ้าน สุดน่าอาย?", opts: [
+            { t: "ยอมใส่แต่ก้มหน้าตลอดเวลาเพราะอายมาก", traits: ["Hajidere", "Dandere"] },
+            { t: "บังคับให้คนนั้นใส่เป็นเพื่อน ไม่งั้นไม่ใส่!", traits: ["Sadodere", "Tsundere"] },
+            { t: "ใส่แล้วโพสท่าสวยๆ มั่นใจซะอย่าง!", traits: ["Gyaru", "Megadere"] },
+            { t: "'คนอย่างฉันต้องเป็นเจ้านายสิ ไม่ใช่คนรับใช้!'", traits: ["Himedere", "Ojou-sama"] },
+            { t: "คิดในใจว่าน่าสนุกดี เลยสวมบทบาทรับใช้แบบอินจัดๆ", traits: ["Kekkondere", "Megadere"] }
+        ]},
+        { q: "6. เวลาที่คุณทำของชิ้นสำคัญของแฟนพัง?", opts: [
+            { t: "ร้องไห้หนักมาก ขอโทษซ้ำๆ เป็นร้อยรอบ", traits: ["Dojikko", "Utsudere"] },
+            { t: "เงียบ หาทางซื้อมาคืนแบบเนียนๆ", traits: ["Kuudere", "Mysterious"] },
+            { t: "'ก็วางไม่เป็นที่เองนี่! เดี๋ยวซื้อคืนให้ก็ได้!'", traits: ["Tsundere", "Kamidere"] },
+            { t: "แอบโยนความผิดให้คนอื่นหน้าตาเฉย", traits: ["Dorodere", "Mayadere"] },
+            { t: "อ้อนสุดชีวิต 'เค้าไม่ได้ตั้งใจน้า ให้อภัยเค้าเถอะนะ'", traits: ["Nyandere", "Deredere"] }
+        ]},
+        { q: "7. คุณชอบให้คนรักของคุณมีนิสัยแบบไหน?", opts: [
+            { t: "เป็นผู้นำ ดุฉันได้ และตัดสินใจแทนฉัน", traits: ["Undere", "Dandere"] },
+            { t: "เชื่อฟัง ยอมรับใช้ฉัน และอยู่ในโอวาท", traits: ["Kamidere", "Himedere"] },
+            { t: "ใครก็ได้ที่รักฉันจนขาดฉันไม่ได้...", traits: ["Yandere", "Shundere"] },
+            { t: "ร่าเริง เป็นเพื่อนลุยไปด้วยกัน", traits: ["Tomboy", "Genki"] },
+            { t: "ดูแลฉันเหมือนเจ้าหญิง/เจ้าชาย ตามใจฉันทุกอย่าง", traits: ["Himedere", "Ojou-sama"] }
+        ]},
+        { q: "8. เมื่อโดนจับมัดมือมัดเท้าเล่นๆ (ในเกม/กิจกรรม)?", opts: [
+            { t: "ดิ้นโวยวาย 'ปล่อยเดี๋ยวนี้นะ เจ้าบ้า!'", traits: ["Tsundere", "Mayadere"] },
+            { t: "ใจเต้นแรง... แอบรู้สึกดีแปลกๆ", traits: ["Undere", "Hajidere"] },
+            { t: "มองตาขวาง 'ถ้าหลุดไปได้ แกตายแน่'", traits: ["Yandere", "Dorodere"] },
+            { t: "นั่งนิ่งๆ รอให้คนอื่นมาแก้มัด ขี้เกียจดิ้น", traits: ["Darudere", "Airhead"] },
+            { t: "แกล้งร้องไห้หนักมาก เพื่อให้อีกฝ่ายตกใจรีบแก้มัดให้", traits: ["Dorodere", "Mayadere"] }
+        ]},
+        { q: "9. ถ้าแฟนขอเช็คโทรศัพท์มือถือของคุณ?", opts: [
+            { t: "ให้ดูได้เลย ไม่มีอะไรปิดบัง พร้อมให้เช็ค 24 ชม.", traits: ["Undere", "Goudere"] },
+            { t: "ไม่ให้! เรื่องส่วนตัวคือเรื่องส่วนตัว", traits: ["Kuudere", "Kamidere"] },
+            { t: "ให้ดู แต่ฉันก็ต้องเช็คของเธอเหมือนกัน แฟร์ๆ", traits: ["Sadodere", "Tsundere"] },
+            { t: "ลบข้อความบางอย่างทิ้งอย่างไวรวดเร็ว...", traits: ["Dorodere", "Yandere"] },
+            { t: "'ได้สิ! แต่ถ้าไม่เจออะไร เธอต้องโดนทำโทษนะ!'", traits: ["Sadodere", "Kamidere"] }
+        ]},
+        { q: "10. คุณอยากเลี้ยงสัตว์แบบไหน?", opts: [
+            { t: "หมาตัวเล็กๆ ขี้อ้อน เชื่อฟังคำสั่ง", traits: ["Himedere", "Onee-san"] },
+            { t: "แมวหยิ่งๆ ที่ชอบมากัดมาข่วนเรา", traits: ["Undere", "Nyandere"] },
+            { t: "สัตว์แปลกๆ หรืองู ดูลึกลับน่าค้นหา", traits: ["Chuunibyou", "Mysterious"] },
+            { t: "หมาตัวใหญ่ๆ พลังเยอะๆ ไว้วิ่งเล่นด้วยกัน", traits: ["Genki", "Tomboy"] },
+            { t: "สัตว์ที่ดุร้าย แต่ซื่อสัตย์และปกป้องฉันได้ตลอดเวลา", traits: ["Yandere", "Goudere"] }
+        ]},
+        { q: "11. โดนรุ่นพี่ที่ทำงาน/โรงเรียนดุ?", opts: [
+            { t: "เถียงกลับถ้าตัวเองไม่ผิด ไม่ยอมโดนด่าฟรี", traits: ["Kamidere", "Tsundere"] },
+            { t: "ก้มหน้ารับฟัง น้ำตาคลอเบ้า", traits: ["Dandere", "Utsudere"] },
+            { t: "ยิ้มรับหน้าชื่นตาบาน แต่ในใจสาปแช่ง", traits: ["Dorodere", "Yandere"] },
+            { t: "'คร้าบๆ เข้าใจแล้วคร้าบ' (เข้าหูซ้ายทะลุหูขวา)", traits: ["Darudere", "Gyaru"] },
+            { t: "กัดริมฝีปากตัวเอง แอบแค้นในใจ 'ฝากไว้ก่อนเถอะ'", traits: ["Mayadere", "Dorodere"] }
+        ]},
+        { q: "12. ในวันหยุด คุณชอบทำอะไรมากที่สุด?", opts: [
+            { t: "วางแผนเที่ยว คุมทริป บังคับทุกคนทำตามแผน", traits: ["Oujidere", "Kamidere"] },
+            { t: "ตามใจเพื่อน/แฟน เขาไปไหนฉันไปด้วย", traits: ["Undere", "Airhead"] },
+            { t: "นอนโง่ๆ อยู่บ้าน ไม่รับรู้อะไรทั้งนั้น", traits: ["Darudere", "Kuudere"] },
+            { t: "สร้างด้อม หวีดไอดอล/คนที่ชอบเปย์ไม่อั้น", traits: ["Megadere", "Goudere"] },
+            { t: "ทำความสะอาดบ้าน เตรียมอาหารให้คนที่รักอย่างสุดฝีมือ", traits: ["Kekkondere", "Onee-san"] }
+        ]},
+        { q: "13. วิธีแสดงความรักของคุณคือ?", opts: [
+            { t: "แกล้ง แหย่ ให้เขาหงุดหงิดเล่น", traits: ["Sadodere", "Tsundere"] },
+            { t: "ดูแลเอาใจใส่ บริการเขาเหมือนเป็นเจ้านาย", traits: ["Goudere", "Undere"] },
+            { t: "คอยปกป้อง ช่วยเหลือ เป็นที่พึ่งพา", traits: ["Onee-san", "Tomboy"] },
+            { t: "ตามติดชีวิตเขา 24 ชั่วโมง ขจัดพวกมารหัวใจ", traits: ["Yandere", "Dorodere"] },
+            { t: "เปย์หนักๆ ซื้อของให้ทุกอย่างที่เขาอยากได้", traits: ["Ojou-sama", "Megadere"] }
+        ]},
+        { q: "14. ถ้าคุณหลงทางกับเพื่อนในป่า?", opts: [
+            { t: "นั่งร้องไห้ รอเพื่อนมาตามหา", traits: ["Hajidere", "Shundere"] },
+            { t: "ใช้ทักษะเอาตัวรอด นำทางหาทางออก", traits: ["Cool Beauty", "Kuudere"] },
+            { t: "เดินสะดุดรากไม้ ล้มกลิ้งคลุกฝุ่น", traits: ["Dojikko", "Bakadere"] },
+            { t: "โวยวาย 'เพราะแกนั่นแหละพามาหลง!'", traits: ["Himedere", "Tsundere"] },
+            { t: "แอบดีใจที่ได้อยู่ด้วยกันสองต่อสอง... โอกาสทองมาแล้ว!", traits: ["Yandere", "Dorodere"] }
+        ]},
+        { q: "15. ถ้าแฟนขอทำเรื่องที่ขัดใจคุณมากๆ?", opts: [
+            { t: "ปฏิเสธเสียงแข็ง ไม่มีทางยอมเด็ดขาด", traits: ["Kamidere", "Ojou-sama"] },
+            { t: "ลังเล... แต่สุดท้ายก็ตอบว่า 'อื้ม ก็ได้...'", traits: ["Undere", "Dandere"] },
+            { t: "ยื่นข้อเสนอ 'ฉันยอมให้ก็ได้ แต่เธอต้อง...'", traits: ["Sadodere", "Cool Beauty"] },
+            { t: "ทำไปบ่นไป 'ครั้งนี้ครั้งเดียวเท่านั้นนะ!'", traits: ["Tsundere", "Mayadere"] },
+            { t: "ร้องไห้กระซิกๆ ให้เขาสงสารจนเปลี่ยนใจ", traits: ["Utsudere", "Shundere"] }
+        ]},
+        { q: "16. มีคนมาสารภาพรัก ทั้งที่คุณไม่ได้ชอบเขา?", opts: [
+            { t: "ปฏิเสธตรงๆ อย่างไร้เยื่อใย", traits: ["Kuudere", "Cool Beauty"] },
+            { t: "สงสาร เลยยอมคบดูเผื่อจะรักเขาได้", traits: ["Undere", "Utsudere"] },
+            { t: "หลอกใช้ประโยชน์จากความรักของเขา", traits: ["Sadodere", "Dorodere"] },
+            { t: "'ระดับเธอยังเร็วไปร้อยปีที่จะมาคบกับฉัน!'", traits: ["Kamidere", "Himedere"] },
+            { t: "แกล้งให้ความหวังไปงั้นๆ แล้วค่อยเททิ้งทีหลัง", traits: ["Sadodere", "Dorodere"] }
+        ]},
+        { q: "17. อาหารที่คุณทำออกมา?", opts: [
+            { t: "เพอร์เฟกต์ จัดจานหรูหราระดับภัตตาคาร", traits: ["Ojou-sama", "Cool Beauty"] },
+            { t: "ไหม้เกรียม หรือรสชาติสุดประหลาด", traits: ["Dojikko", "Bakadere"] },
+            { t: "ใส่ความรัก (และของแปลกๆ) ลงไปเพียบ", traits: ["Yandere", "Goudere"] },
+            { t: "อร่อย อบอุ่น เหมือนรสมือแม่", traits: ["Onee-san", "Deredere"] },
+            { t: "หน้าตาดูไม่ได้เลย แต่บังคับให้เขากินให้หมด!", traits: ["Kamidere", "Tsundere"] }
+        ]},
+        { q: "18. ถ้าโดนบังคับให้เล่นเครื่องเล่นหวาดเสียว?", opts: [
+            { t: "กรี๊ดสุดเสียง เกาะแขนคนข้างๆ แน่น", traits: ["Hajidere", "Dandere"] },
+            { t: "นั่งนิ่งๆ หน้าตาย ไม่แสดงอารมณ์", traits: ["Kuudere", "Mysterious"] },
+            { t: "หัวเราะชอบใจ สนุกสุดๆ ขอลองอีกรอบ", traits: ["Genki", "Tomboy"] },
+            { t: "ด่าคนชวนตลอดทาง 'ถ้าฉันตายแกต้องรับผิดชอบ!'", traits: ["Tsundere", "Kamidere"] },
+            { t: "นั่งกอดคนข้างๆ แน่นๆ 'ปกป้องฉันด้วยนะ...'", traits: ["Undere", "Hajidere"] }
+        ]},
+        { q: "19. สไตล์การแต่งตัวเวลาไปเดต?", opts: [
+            { t: "แต่งตามที่เขาเคยบอกว่าชอบเป๊ะๆ", traits: ["Undere", "Megadere"] },
+            { t: "จัดเต็ม หรูหรา ต้องให้เขาตะลึง", traits: ["Himedere", "Gyaru"] },
+            { t: "ชุดมิดชิด เรียบร้อย ไม่ค่อยมั่นใจ", traits: ["Dandere", "Utsudere"] },
+            { t: "ผ้าคลุมแห่งความมืดและเครื่องรางเวทมนตร์", traits: ["Chuunibyou"] },
+            { t: "ชุดชิลๆ สบายๆ ไม่คิดอะไรมาก เป็นตัวของตัวเอง", traits: ["Tomboy", "Darudere"] }
+        ]},
+        { q: "20. หากเล่นเกมแข่งขันแพ้?", opts: [
+            { t: "ไม่ยอมรับความพ่ายแพ้ 'แกโกงนี่หน่า!'", traits: ["Tsundere", "Kamidere"] },
+            { t: "ยอมรับบทลงโทษแต่โดยดี ไม่กล้าขัดใจ", traits: ["Undere", "Dojikko"] },
+            { t: "แอบยิ้มร้าย 'เดี๋ยวคราวหน้าแกโดนเอาคืนแน่'", traits: ["Sadodere", "Dorodere"] },
+            { t: "'อ่าฮะ แพ้ก็แพ้ ขี้เกียจเล่นต่อละ'", traits: ["Darudere", "Airhead"] },
+            { t: "งอแง อ้อนให้เขาปล่อยผ่าน 'ตาแรกนับเป็นซ้อมสิ!'", traits: ["Nyandere", "Bakadere"] }
+        ]},
+        { q: "21. คำพูดติดปากของคุณเวลาเขิน?", opts: [
+            { t: "'บ-บ้า! ใครเขินกัน ไม่ได้เขินสักหน่อย!'", traits: ["Tsundere", "Mayadere"] },
+            { t: "(พูดไม่ออก ได้แต่ก้มหน้าซ่อนความแดง)", traits: ["Hajidere", "Dandere"] },
+            { t: "'หึ... ก็น่ารักดีนี่' (แกล้งกลับแก้เขิน)", traits: ["Sadodere", "Cool Beauty"] },
+            { t: "'ชอบจังเลยยยย~' (พุ่งเข้าไปกอด)", traits: ["Deredere", "Nyandere"] },
+            { t: "'มองอะไรนักหนา... อยากโดนดีหรือไง' (เสียงสั่นๆ)", traits: ["Tsundere", "Mayadere"] }
+        ]},
+        { q: "22. วิธีเรียกร้องความสนใจจากคนที่ชอบ?", opts: [
+            { t: "แกล้งทุบ แกล้งด่า ให้เขาหันมามอง", traits: ["Tsundere", "Sadodere"] },
+            { t: "นั่งจ้องเขาเงียบๆ จากมุมห้อง", traits: ["Yandere", "Kuudere"] },
+            { t: "ไปดึงเสื้อเขาเบาๆ แล้วเรียกชื่อ", traits: ["Dandere", "Nyandere"] },
+            { t: "สั่งให้เขามาสนใจ 'มาคอยพัดให้ฉันเดี๋ยวนี้!'", traits: ["Himedere", "Oujidere"] },
+            { t: "แกล้งทำเป็นไปสนิทกับคนอื่นให้เขาหึงเล่น", traits: ["Sadodere", "Gyaru"] }
+        ]},
+        { q: "23. ถ้ามีคนเห็นคุณกำลังร้องไห้?", opts: [
+            { t: "ตะคอกใส่ 'มองอะไร! ห้ามมองนะ!'", traits: ["Tsundere", "Kamidere"] },
+            { t: "รีบเช็ดน้ำตาแล้วทำตัวปกติ", traits: ["Kuudere", "Cool Beauty"] },
+            { t: "ร้องไห้หนักกว่าเดิม ร้องขอให้เขากอดปลอบ", traits: ["Utsudere", "Shundere"] },
+            { t: "หัวเราะกลบเกลื่อน 'ฝุ่นเข้าตาน่ะ ฮ่าๆ'", traits: ["Genki", "Gyaru"] },
+            { t: "แกล้งทำเป็นยิ้มทั้งน้ำตา แต่จริงๆ อยากให้เขาปลอบ", traits: ["Mayadere", "Tsundere"] }
+        ]},
+        { q: "24. การตอบแชทของคุณ?", opts: [
+            { t: "ตอบทันที ยาวเป็นหางว่าว สติ๊กเกอร์รัวๆ", traits: ["Megadere", "Deredere"] },
+            { t: "อ่านแล้ว แต่ดองไว้เป็นชาติ", traits: ["Darudere", "Mysterious"] },
+            { t: "ตอบสั้นๆ 'อืม' 'อ่า' 'โอเค'", traits: ["Kuudere", "Cool Beauty"] },
+            { t: "ทักไปถามตลอด 'อยู่ไหน' 'ทำอะไร' 'กับใคร'", traits: ["Yandere", "Dorodere"] },
+            { t: "ตอบกลับด้วยประโยคกำกวม ชวนให้คิดลึกหรือสับสน", traits: ["Mysterious", "Sadodere"] }
+        ]},
+        { q: "25. เมื่อเจอของเซลล์ลดราคา 90%?", opts: [
+            { t: "พุ่งตัวเข้าไปแย่งชิงกับป้าๆ รวดเร็วปานสายฟ้า!", traits: ["Genki", "Tomboy"] },
+            { t: "'ของลดราคาถูกๆ ฉันไม่ใช้หรอกนะ'", traits: ["Ojou-sama", "Himedere"] },
+            { t: "ยืนมองอยู่ห่างๆ โดนคนอื่นเบียดจนกระเด็น", traits: ["Dandere", "Dojikko"] },
+            { t: "เหมาหมดร้านไปเปย์ให้ไอดอล/คนที่ชอบ", traits: ["Megadere", "Goudere"] },
+            { t: "ยืนงงๆ ไม่กล้าแย่ง จนของหมดไปต่อหน้าต่อตา", traits: ["Dandere", "Airhead"] }
+        ]},
+        { q: "26. ถ้าเพื่อนมาขอยืมเงิน?", opts: [
+            { t: "'ไม่มีให้ยืมหรอก ไปหาคนอื่นไป' (แต่แอบให้ทีหลัง)", traits: ["Tsundere"] },
+            { t: "ให้ยืมทันที ไม่ถามเหตุผล ไม่กล้าทวงคืนด้วย", traits: ["Undere", "Bakadere"] },
+            { t: "ให้ยืม แต่คิดดอกเบี้ยสุดโหด", traits: ["Sadodere", "Dorodere"] },
+            { t: "ให้ยืม แต่ต้องมาทำสัญญาเป็นทาสรับใช้ฉัน 1 อาทิตย์", traits: ["Kamidere", "Oujidere"] },
+            { t: "ให้ยืม แต่บังคับให้เขาเลี้ยงข้าวฉันเป็นข้อแลกเปลี่ยน", traits: ["Oujidere", "Gyaru"] }
+        ]},
+        { q: "27. ถ้ามีวันหยุด 1 วัน คุณจะให้แฟนทำอะไรให้?", opts: [
+            { t: "นวดไหล่ ป้อนองุ่น และพัดให้ฉัน", traits: ["Himedere", "Ojou-sama"] },
+            { t: "ไม่เอาอะไรเลย แค่เขามาลูบหัวก็พอแล้ว", traits: ["Nyandere", "Undere"] },
+            { t: "บังคับให้เขาแต่งคอสเพลย์แปลกๆ ให้ฉันดู", traits: ["Sadodere", "Chuunibyou"] },
+            { t: "ชวนเล่นเกม/ดูหนังด้วยกัน ชิลๆ", traits: ["Genki", "Gyaru"] },
+            { t: "ให้เขาสอนการบ้าน หรือสอนทำอะไรสักอย่างให้", traits: ["Bakadere", "Dandere"] }
+        ]},
+        { q: "28. เวลาดูหนังสยองขวัญ?", opts: [
+            { t: "ปิดตาตลอดเรื่อง กรี๊ดทุกครั้งที่ผีออก", traits: ["Hajidere", "Dojikko"] },
+            { t: "หัวเราะตอนที่ตัวละครโดนเชือด 'อ่อนจัง'", traits: ["Yandere", "Sadodere"] },
+            { t: "หลับตั้งแต่ 15 นาทีแรก", traits: ["Darudere", "Airhead"] },
+            { t: "วิจารณ์เมคอัพผีและพล็อตเรื่องอย่างจริงจัง", traits: ["Kuudere", "Cool Beauty"] },
+            { t: "คอยพากย์หนังตลอดเรื่องจนคนข้างๆ รำคาญ", traits: ["Genki", "Bakadere"] }
+        ]},
+        { q: "29. เมื่อถึงวันครบรอบที่คบกัน?", opts: [
+            { t: "เซอร์ไพรส์ด้วยทะเบียนสมรส วางแผนแต่งงานแล้ว!", traits: ["Kekkondere", "Goudere"] },
+            { t: "ทำเป็นลืม แล้วค่อยโยนของขวัญให้ทีหลัง", traits: ["Tsundere", "Mayadere"] },
+            { t: "เรียกร้องของขวัญชิ้นใหญ่ บังคับเขาเลี้ยงข้าวหรู", traits: ["Kamidere", "Himedere"] },
+            { t: "นั่งทำของแฮนด์เมดน่ารักๆ ให้ด้วยความตั้งใจ", traits: ["Dandere", "Deredere"] },
+            { t: "ทุ่มเงินจองร้านหรู ปิดร้านฉลองกันแค่สองคน", traits: ["Ojou-sama", "Oujidere"] }
+        ]},
+        { q: "30. สุดท้ายแล้ว... คุณคิดว่าตัวเองเหนือกว่า หรือชอบยอมคนอื่น?", opts: [
+            { t: "ฉันคือผู้คุมเกม! ทุกคนต้องเชื่อฟังฉัน (S ตัวแม่/พ่อ)", traits: ["Kamidere", "Sadodere", "Oujidere"] },
+            { t: "ฉันยอมโอนอ่อนตามใจได้เพื่อคนที่รัก (M ถวายชีวิต)", traits: ["Undere", "Goudere", "Hajidere"] },
+            { t: "ปากบอกไม่ยอม แต่สุดท้ายก็แพ้ทางเขาอยู่ดี (S ปลอม/M ซ่อนรูป)", traits: ["Tsundere", "Mayadere"] },
+            { t: "ไม่ทั้งคู่ ฉันมีชีวิตส่วนตัวของฉัน ไม่ผูกมัดใคร (สาย Normal)", traits: ["Kuudere", "Tomboy", "Darudere"] },
+            { t: "ฉันสามารถเป็นทั้ง S และ M ขึ้นอยู่กับว่าคนๆ นั้นเป็นใคร", traits: ["Nyandere", "Dorodere"] }
+        ]}
+    ];
+
+    let currentQuestion = 0;
+    let scores = {};
+    let scoreHistory = []; // ตัวแปรเก็บประวัติคะแนนสำหรับปุ่มย้อนกลับ
+
+    function startQuiz() {
+        Object.keys(resultData).forEach(key => scores[key] = 0);
+        currentQuestion = 0;
+        scoreHistory = []; // รีเซ็ตประวัติ
+        document.getElementById('start-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const q = questions[currentQuestion];
         
-        function startQuiz() {
-            startScreen.classList.add('hidden');
-            quizScreen.classList.remove('hidden');
-            currentQuestionIndex = 0;
-            userAnswers = [];
-            loadQuestion();
+        let progressPercent = (currentQuestion / questions.length) * 100;
+        document.getElementById('progress-bar').style.width = progressPercent + '%';
+        document.getElementById('progress-text').innerText = `คำถามข้อที่ ${currentQuestion + 1} / ${questions.length}`;
+        
+        document.getElementById('question-text').innerText = q.q;
+        
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+        
+        q.opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-option';
+            btn.innerText = opt.t;
+            btn.onclick = () => selectAnswer(opt.traits);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function selectAnswer(traits) {
+        // เก็บประวัติคะแนนที่บวกไป เพื่อไว้หักออกตอนกดย้อนกลับ
+        scoreHistory.push(traits);
+        
+        // บวกคะแนน
+        traits.forEach(t => {
+            if(scores[t] !== undefined) scores[t] += 1;
+        });
+        
+        currentQuestion++;
+        
+        if (currentQuestion < questions.length) {
+            renderQuestion();
+        } else {
+            showResult();
         }
+    }
 
-        function loadQuestion() {
-            const qData = questions[currentQuestionIndex];
-            document.getElementById('current-q-num').innerText = currentQuestionIndex + 1;
-            document.getElementById('progress-bar').style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
-            
-            document.getElementById('question-text').innerText = qData.q;
-            
-            const backBtn = document.getElementById('back-btn');
-            if (currentQuestionIndex > 0) {
-                backBtn.classList.remove('hidden');
-            } else {
-                backBtn.classList.add('hidden');
-            }
-            
-            const optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
-            
-            const shuffledOptions = [...qData.options].sort(() => Math.random() - 0.5);
-
-            shuffledOptions.forEach((opt, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn w-full text-left p-4 rounded-xl border-2 border-purple-100 text-gray-700 bg-white hover:bg-purple-50 font-medium text-lg';
-                btn.innerText = opt.text;
-                btn.onclick = () => selectOption(opt.type);
-                optionsContainer.appendChild(btn);
+    // ฟังก์ชันย้อนกลับ
+    function goBack() {
+        if (currentQuestion > 0) {
+            currentQuestion--;
+            // ดึงข้อมูลคำตอบข้อย้อนหลังออกมา แล้วนำไปลบคะแนนที่บวกไปแล้วทิ้ง
+            const lastTraits = scoreHistory.pop();
+            lastTraits.forEach(t => {
+                if(scores[t] !== undefined) scores[t] -= 1;
             });
+            renderQuestion();
+        } else {
+            // ถ้าเป็นข้อ 1 แล้วกดย้อนกลับ จะกลับไปหน้าแรก
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('start-screen').classList.add('active');
         }
+    }
 
-        function selectOption(type) {
-            userAnswers[currentQuestionIndex] = type;
-            currentQuestionIndex++;
-            
-            if (currentQuestionIndex < questions.length) {
-                const qText = document.getElementById('question-text');
-                const oCont = document.getElementById('options-container');
-                qText.style.opacity = 0;
-                oCont.style.opacity = 0;
-                
-                setTimeout(() => {
-                    loadQuestion();
-                    qText.style.opacity = 1;
-                    oCont.style.opacity = 1;
-                }, 200);
-            } else {
-                showResult();
-            }
-        }
+    function showResult() {
+        document.getElementById('quiz-screen').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
+        
+        let topTrait = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+        let data = resultData[topTrait];
+        
+        document.getElementById('result-icon').innerText = data.icon;
+        document.getElementById('result-name').innerText = topTrait;
+        document.getElementById('result-sm').innerText = data.sm;
+        document.getElementById('result-desc').innerText = data.desc;
+    }
+</script>
 
-        function goBack() {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                const qText = document.getElementById('question-text');
-                const oCont = document.getElementById('options-container');
-                qText.style.opacity = 0;
-                oCont.style.opacity = 0;
-                setTimeout(() => {
-                    loadQuestion();
-                    qText.style.opacity = 1;
-                    oCont.style.opacity = 1;
-                }, 200);
-            }
-        }
-
-        function showResult() {
-            document.getElementById('progress-bar').style.width = '100%';
-            setTimeout(() => {
-                quizScreen.classList.add('hidden');
-                resultScreen.classList.remove('hidden');
-                
-                let scores = {};
-                userAnswers.forEach(type => {
-                    scores[type] = (scores[type] || 0) + 1;
-                });
-                
-                let maxScore = -1;
-                let finalType = 'm_shy';
-                
-                for (let type in scores) {
-                    if (scores[type] > maxScore) {
-                        maxScore = scores[type];
-                        finalType = type;
-                    }
-                }
-                
-                const resultData = resultTypes[finalType];
-                document.getElementById('result-emoji').innerText = resultData.emoji;
-                document.getElementById('result-title').innerText = resultData.title;
-                document.getElementById('result-desc').innerText = resultData.desc;
-            }, 300);
-        }
-
-        function resetQuiz() {
-            resultScreen.classList.add('hidden');
-            startScreen.classList.remove('hidden');
-        }
-    </script>
 </body>
 </html>
