@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>หนีให้พ้น! องค์หญิง Shiori</title>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -50,6 +50,9 @@ button.big:active{transform:translateY(3px);box-shadow:0 2px 0 #5a1236}
 #joyBase{position:absolute;width:110px;height:110px;border-radius:50%;border:3px solid rgba(255,255,255,.35);background:rgba(255,255,255,.07);display:none;transform:translate(-50%,-50%)}
 #joyKnob{position:absolute;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.4);left:50%;top:50%;transform:translate(-50%,-50%)}
 #muteBtn{position:absolute;right:1em;bottom:1em;pointer-events:auto;background:rgba(10,5,20,.7);border:2px solid #6a4a9a;color:#fff;border-radius:8px;padding:.2em .6em;font-family:inherit;cursor:pointer}
+.gb{font-family:inherit;font-size:16px;padding:6px 16px;border-radius:8px;border:2px solid #ffb3da;background:#2a1c40;color:#fff;cursor:pointer;margin:2px}.gb.on{background:#b0306a}#pname{font-family:inherit;font-size:16px;padding:6px 10px;border-radius:8px;border:2px solid #7a5aaa;background:#150c24;color:#fff;margin:4px;width:200px;text-align:center;user-select:text;-webkit-user-select:text}#topleft{padding-top:env(safe-area-inset-top,0px)}
+#menuBtn{position:absolute;left:50%;bottom:1em;transform:translateX(-50%);pointer-events:auto;background:rgba(10,5,20,.7);border:2px solid #6a4a9a;color:#fff;border-radius:8px;padding:.3em .9em;font-family:inherit;cursor:pointer}#dpad{position:absolute;left:14px;bottom:24px;width:176px;height:176px;pointer-events:none}#dpad .tbtn{width:56px;height:56px;font-size:22px}.pm{display:flex;flex-direction:column;gap:12px;align-items:center}
+#joyBase{display:block!important;width:120px;height:120px;pointer-events:auto;touch-action:none}.tbtn{transform:translate(-50%,-50%);width:84px;height:84px;font-size:18px;touch-action:none;user-select:none}#btnRun,#btnHide{right:auto!important;bottom:auto!important}.edit .ctl{outline:3px dashed #ffd84a;background:rgba(255,216,74,.2)}#editBar{position:fixed;left:50%;top:1em;transform:translateX(-50%);z-index:12;display:none;background:rgba(10,5,20,.92);border:2px solid #ffd84a;padding:.5em .8em;border-radius:10px;text-align:center;color:#ffe9a0;line-height:2}
 </style>
 </head>
 <body>
@@ -61,21 +64,23 @@ button.big:active{transform:translateY(3px);box-shadow:0 2px 0 #5a1236}
   <div id="topleft">
     <div id="hearts">♥♥♥</div>
     <div id="keysTxt">🗝 กุญแจ 0/5</div>
-    <div id="stam"><div id="stamFill"></div></div>
+    <div id="stam"><div id="stamFill"></div></div><div id="ekst" style="margin-top:.3em;color:#a99bff"></div>
   </div>
   <div id="roomName"></div>
   <canvas id="mini" width="96" height="72"></canvas>
   <div id="toast"></div>
   <div id="hint"></div>
-  <button id="muteBtn">🔊 M</button>
+  <button id="menuBtn">☰ เมนู</button><button id="muteBtn">🔊 M</button>
 </div>
 <div id="touch">
-  <div id="joyBase"><div id="joyKnob"></div></div>
-  <div class="tbtn" id="btnHide">ซ่อน</div>
-  <div class="tbtn" id="btnRun">วิ่ง</div>
+  <div id="joyBase" class="ctl"><div id="joyKnob"></div></div>
+  <div class="tbtn ctl" id="btnRun">วิ่ง</div>
+  <div class="tbtn ctl" id="btnHide" style="font-size:36px">✋</div>
 </div>
+<div id="editBar">ลากปุ่มไปตำแหน่งที่ต้องการ<br><button class="gb" id="eSave">บันทึก</button><button class="gb" id="eReset">รีเซ็ต</button><button class="gb" id="eCancel">ยกเลิก</button></div>
 
-<div id="title" class="ov on"><div class="panel">
+<div id="dev" class="ov on"><div class="panel"><h1>เล่นบนอะไร?</h1><p class="sub">เลือกอุปกรณ์เพื่อให้ปุ่มควบคุมเหมาะกับคุณ</p><div class="pm"><button class="big" id="devPC">💻 คอมพิวเตอร์</button><button class="big" id="devMob">📱 มือถือ</button></div></div></div>
+<div id="title" class="ov"><div class="panel">
   <h1>หนีให้พ้น!<span>องค์หญิง Shiori ♡</span></h1>
   <p class="sub">คุณหลงเข้ามาในคฤหาสน์ของเธอ... และเธอไม่อยากให้คุณกลับไปไหนอีกเลย</p>
   <div class="cards">
@@ -86,8 +91,9 @@ button.big:active{transform:translateY(3px);box-shadow:0 2px 0 #5a1236}
   <div class="how">
     <kbd>W A S D</kbd> / <kbd>ลูกศร</kbd> เดิน &nbsp;•&nbsp; <kbd>Shift</kbd> วิ่ง (มีค่าพลัง) &nbsp;•&nbsp; <kbd>E</kbd> / <kbd>Space</kbd> ซ่อนในตู้เสื้อผ้า &nbsp;•&nbsp; <kbd>M</kbd> ปิดเสียง<br>
     เก็บกุญแจให้ครบ 5 ดอก แล้ววิ่งไปที่ประตูใหญ่ทางด้านล่างของคฤหาสน์ • มีหัวใจ 3 ดวง<br>
-    💡 ซ่อนตัวได้เมื่อไม่มีใครเห็นเท่านั้น และอย่าซ่อนใกล้จุดที่พวกเขากำลังค้นหา!
+    💡 แอบต่อหน้าพ่อบ้านจะโดนจับอยู่ดี ต้องละสายตาเขาก่อน • E ที่บันไดเพื่อขึ้นลง • ห้องลับของพ่อบ้านต้องหากุญแจจากห้องใต้ดิน<br>⚡ คุณเอกพุ่ง 3 วิ คูลดาวน์ 10 วิ • ฮิคาริช่วยไล่ล่า • ชิโอริจะเรียกคุณว่า "รูบี้" เสมอ
   </div>
+  <div style="margin:6px 0 12px"><button class="gb" id="gM">👨 ชาย</button><button class="gb on" id="gF">👩 หญิง</button><br><input id="pname" maxlength="14" placeholder="ตั้งชื่อของคุณ"></div>
   <button class="big" id="startBtn">เริ่มเกม</button>
 </div></div>
 
@@ -96,6 +102,10 @@ button.big:active{transform:translateY(3px);box-shadow:0 2px 0 #5a1236}
   <div id="overTxt"></div>
   <button class="big" id="retryBtn">ลองอีกครั้ง</button>
 </div></div>
+
+<div id="pause" class="ov"><div class="panel"><h1>พักเกม</h1><div class="pm"><button class="big" id="resumeBtn">เล่นต่อ</button><button class="big" id="restartBtn" style="background:#3a2a60;border-color:#9a7ad0;box-shadow:0 5px 0 #1a1030">เริ่มใหม่</button><button class="big" id="setBtn" style="background:#3a2a60;border-color:#9a7ad0;box-shadow:0 5px 0 #1a1030">⚙ ตั้งค่า</button><button class="big" id="exitBtn" style="background:#2a2a38;border-color:#8a8aa0;box-shadow:0 5px 0 #14141c">ออกไปหน้าเว็บ</button></div></div></div>
+
+<div id="settings" class="ov"><div class="panel"><h1>ตั้งค่า</h1><div id="setMob"><p class="sub">ปุ่มบนมือถือ ลากย้ายได้อิสระ แล้วกดบันทึก</p><button class="big" id="editBtn">✥ ปรับตำแหน่งปุ่ม</button></div><div id="setPC"><p class="sub">ปุ่มคีย์บอร์ด กดที่ปุ่มแล้วกดคีย์ใหม่ (ลูกศรใช้เดินได้เสมอ)</p><div id="kbList"></div></div><div class="pm" style="margin-top:14px"><button class="big" id="setReset" style="background:#3a2a60;border-color:#9a7ad0;box-shadow:0 5px 0 #1a1030">รีเซ็ตค่าเริ่มต้น</button><button class="big" id="setBack">กลับ</button></div></div></div>
 
 <div id="win" class="ov"><div class="panel">
   <h1 style="color:#ffe27a">หนีออกมาได้แล้ว!</h1>
@@ -238,6 +248,31 @@ const SP={};
   for(let d=0;d<3;d++)for(let f=0;f<4;f++)SP[n][d][f]=mkSprite(fn,d,f);
   for(let f=0;f<4;f++)SP[n][3][f]=flip(SP[n][2][f]);
 });
+function femSpr(g,dir,f){
+ const c={hair:'#3a2418',hl:'#6a4a38',skin:'#f4d0b4',top:'#f4f0f8',dr:'#2fb5a6',dd:'#217d73',rb:'#ffb133',eye:'#1c1420',shoe:'#f2f2f2'};
+ const la=f===1?1:f===3?-1:0,lr=f===1,rr=f===3;
+ const leg=(x,r)=>{if(r)R(g,c.shoe,x-1,22,3,1);else{R(g,c.skin,x,22,2,1);R(g,c.shoe,x-1,23,3,1)}};
+ if(dir<2){
+  leg(5,lr);leg(9,rr);
+  R(g,c.dr,4,14,8,4);R(g,c.dr,3,18,10,2);R(g,c.dr,2,20,12,1);R(g,c.dd,2,21,12,1);R(g,c.dd,3,19,1,2);R(g,c.dd,12,19,1,2);
+  R(g,c.top,2,13+la,2,4);R(g,c.skin,2,17+la,2,1);R(g,c.top,12,13-la,2,4);R(g,c.skin,12,17-la,2,1);
+  R(g,c.top,4,12,8,3);
+  if(dir===0){
+   R(g,c.rb,6,12,4,2);R(g,c.hair,2,5,2,11);R(g,c.hair,12,5,2,11);R(g,c.hair,3,1,10,5);R(g,c.skin,5,6,6,5);
+   R(g,c.hair,4,5,8,2);R(g,c.hair,3,6,2,4);R(g,c.hair,11,6,2,4);
+   R(g,c.eye,6,8,1,2);R(g,c.eye,9,8,1,2);R(g,'#ffb4b4',5,10,1,1);R(g,'#ffb4b4',10,10,1,1);R(g,'#c4606e',7,10,2,1);R(g,c.hl,5,2,3,1);
+  } else {R(g,c.hair,2,1,12,14);R(g,c.hl,5,3,3,1);R(g,c.hl,9,6,1,4)}
+  R(g,c.rb,10,1,4,3);R(g,c.dd,11,2,2,1);
+ } else {
+  leg(5,lr);leg(8,rr);
+  R(g,c.dr,4,14,8,4);R(g,c.dr,3,18,10,2);R(g,c.dr,3,20,10,1);R(g,c.dd,3,21,10,1);
+  R(g,c.top,5,12,7,3);R(g,c.hair,8,5,6,11);
+  R(g,c.top,6,13+la,3,4);R(g,c.skin,7,17+la,2,1);
+  R(g,c.hair,3,1,10,5);R(g,c.skin,3,6,5,5);R(g,c.hair,3,5,6,2);
+  R(g,c.eye,4,8,1,2);R(g,'#ffb4b4',3,10,2,1);R(g,c.hl,6,2,3,1);R(g,c.rb,9,1,4,3);
+ }
+}
+const tint=(set,d)=>set.map(a=>a.map(c=>mk(c.width,c.height,x=>{x.filter="hue-rotate("+d+"deg)";x.drawImage(c,0,0)})));SP.meM=SP.me;SP.meF=[[],[],[],[]];for(let d=0;d<3;d++)for(let f=0;f<4;f++)SP.meF[d][f]=mkSprite(femSpr,d,f);for(let f=0;f<4;f++)SP.meF[3][f]=flip(SP.meF[2][f]);SP.hk=tint(SP.ek,170);
 function portrait(id,n){const c=$(id),k=6;c.width=18*k;c.height=26*k;const x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(SP[n][0][0],0,0,18*k,26*k)}
 portrait('pvS','shiori');portrait('pvE','ek');portrait('pvM','me');
 
@@ -257,7 +292,7 @@ const wallFace=mk(16,16,g=>{R(g,'#58324f',0,0,16,16);for(let x=0;x<16;x+=4)R(g,'
 const wallCap=mk(16,16,g=>{R(g,'#241a32',0,0,16,16);R(g,'#1a1224',0,7,16,1);R(g,'#1a1224',0,15,16,1);R(g,'#1a1224',4,0,1,7);R(g,'#1a1224',11,8,1,7);R(g,'#35284c',0,0,16,1)});
 
 /* ============ MAP ============ */
-const grid=new Uint8Array(MW*MH);
+let grid=new Uint8Array(MW*MH);
 const roomXs=[1,17,33],roomWs=[15,15,14],roomYs=[1,13,25],roomHs=[11,11,10];
 const roomIdx=(tx,ty)=>(ty<12?0:ty<24?1:2)*3+(tx<16?0:tx<32?1:2);
 const RN=[
@@ -294,12 +329,12 @@ function buildMap(){
   });
   items.sort((a,b)=>(a.y+a.h)-(b.y+b.h));
 }
-const solidAt=(tx,ty)=>{if(tx<0||ty<0||tx>=MW||ty>=MH)return true;const v=grid[ty*MW+tx];return v===1||v===2||(v===3&&!gateOpen)};
+const solidAt=(tx,ty)=>{if(tx<0||ty<0||tx>=MW||ty>=MH)return true;const v=grid[ty*MW+tx];return v===1||v===2||v>=4||(v===3&&!gateOpen)};
 const tileAt=(px,py)=>{const tx=Math.floor(px/T),ty=Math.floor(py/T);if(tx<0||ty<0||tx>=MW||ty>=MH)return 1;return grid[ty*MW+tx]};
 function boxFree(x,y){const hx=4,hy=3;return !(solidAt(Math.floor((x-hx)/T),Math.floor((y-hy)/T))||solidAt(Math.floor((x+hx-.01)/T),Math.floor((y-hy)/T))||solidAt(Math.floor((x-hx)/T),Math.floor((y+hy-.01)/T))||solidAt(Math.floor((x+hx-.01)/T),Math.floor((y+hy-.01)/T)))}
 function moveE(e,dx,dy){let m=false;if(dx&&boxFree(e.x+dx,e.y)){e.x+=dx;m=true}if(dy&&boxFree(e.x,e.y+dy)){e.y+=dy;m=true}return m}
 function freeNear(tx,ty){for(let r=0;r<8;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){const x=tx+dx,y=ty+dy;if(x>0&&y>0&&x<MW-1&&y<MH-1&&grid[y*MW+x]===0)return{x:x*T+8,y:y*T+8}}return{x:tx*T+8,y:ty*T+8}}
-function hasLOS(a,b){const dx=b.x-a.x,dy=b.y-a.y,n=Math.ceil(Math.hypot(dx,dy)/6);for(let i=1;i<n;i++){const v=tileAt(a.x+dx*i/n,a.y+dy*i/n);if(v===1||(v===3&&!gateOpen))return false}return true}
+function hasLOS(a,b){const dx=b.x-a.x,dy=b.y-a.y,n=Math.ceil(Math.hypot(dx,dy)/6);for(let i=1;i<n;i++){const v=tileAt(a.x+dx*i/n,a.y+dy*i/n);if(v===1||v===4||(v===3&&!gateOpen))return false}return true}
 
 /* BFS */
 const DX=[1,-1,0,0],DY=[0,0,1,-1];
@@ -362,12 +397,13 @@ let mi=0,mt=0;
 
 /* ============ STATE ============ */
 let state='title',tm=0,gateOpen=false,grace=0,lives=3,keysGot=0,playT=0,flashA=0,shake=0;
-const TOTALKEYS=5;
-let keyList=[],visited=new Set(),petals=[],patrol=[];
+const TOTALKEYS=5;let lv=1,V=[],PAT=[],LV=[],secOpen=false,hasSK=false,PN='ผู้เล่น',gender='f';SP.me=SP.meF;portrait('pvM','me');
+let keyList=[],petals=[],patrol=[];
 const P={x:0,y:0,dir:0,anim:0,hidden:false,spot:null,stam:100,exh:false,inv:0,spr:false,mv:false};
 const S={cls:'shiori',spr:'shiori',dir:0,anim:0,rp:0,pt:-1,pc:-1,nx:null};
 const E={cls:'ek',spr:'ek',dir:0,anim:0,rp:0,pt:-1,pc:-1,nx:null};
-const camera={x:0,y:0};
+const HK={cls:'ek',spr:'ek',dir:0,anim:0,rp:0,pt:-1,pc:-1,nx:null};const ENS=[S,E,HK];const camera={x:0,y:0};
+let KB={...{up:'w',down:'s',left:'a',right:'d',run:'shift',use:'e',pause:'escape'}},capturing=null;try{Object.assign(KB,JSON.parse(localStorage.getItem('shiori_keys'))||{})}catch(_){}
 const inp=new Set();let joy=null,runBtn=false,hideReq=false;
 
 function say(e,text,dur){
@@ -378,59 +414,93 @@ function say(e,text,dur){
 let toastT=0;
 function toast(t,d){const el=$('toast');el.textContent=t;el.classList.add('on');toastT=d||2.5}
 
+const ORIG=RN.map(r=>({it:r.it,c:r.c})),BED={it:[['bed','tl'],['wardrobe','tr'],['plant','bl'],['sofa','br']],c:null};
+const NMS=[['ห้องขัง','ห้องเก็บไวน์','ห้องหม้อไอน้ำ','อุโมงค์มืด','ห้องกลางใต้ดิน','ห้องพิธีกรรม','ห้องเก็บของเก่า','ห้องมืด','ปลายบันไดใต้ดิน'],['ห้องนอน 6','ห้องนอน 7','ห้องนอน 8','ห้องอาหาร','โถงใหญ่ (บันไดขึ้น)','ห้องครัว','ห้องน้ำ','ห้องโถงทางเข้า','ห้องเก็บของ (บันไดลงใต้ดิน)'],['ห้องนอนของคุณ','ห้องนอน 1','ห้องนอน 2','ห้องนอน 3','โถงชั้นบน (บันไดลง)','ห้องนอนใหญ่ของคุณหนูชิโอริ','ห้องนอน 4','ห้องนอน 5','ห้องลับของพ่อบ้าน 🔒']];
+function setLv(n){lv=n;grid=LV[n].grid;items=LV[n].items}
+function buildAll(){LV=[];
+ for(let l=0;l<3;l++){RN.forEach((r,i)=>{const t=l===1?(i<3?BED:ORIG[i]):l===2?(i===4||i===8?ORIG[i]:BED):ORIG[8];r.it=t.it;r.c=t.c});
+  grid=new Uint8Array(MW*MH);buildMap();
+  if(l!==1)for(let x=23;x<=25;x++)grid[(MH-1)*MW+x]=1;
+  if(l===1){grid[14*MW+24]=5;grid[26*MW+40]=6}
+  if(l===2){grid[14*MW+24]=6;for(let y=25;y<35;y++)if(grid[y*MW+32]===0)grid[y*MW+32]=4;for(let x=33;x<47;x++)if(grid[24*MW+x]===0)grid[24*MW+x]=4}
+  if(l===0)grid[26*MW+40]=5;
+  LV.push({grid,items:items.slice()})}}
+function nearUse(){let b=null,bd=24;const tx0=Math.floor(P.x/T),ty0=Math.floor(P.y/T);
+ for(let y=ty0-2;y<=ty0+2;y++)for(let x=tx0-2;x<=tx0+2;x++){if(x<0||y<0||x>=MW||y>=MH)continue;const v=grid[y*MW+x];if(v>=4){const d=Math.hypot(x*T+8-P.x,y*T+8-P.y);if(d<bd){bd=d;b={x,y,v}}}}return b}
+function tryUse(){const u=nearUse();if(!u)return false;
+ if(u.v===4){if(hasSK){for(let i=0;i<grid.length;i++)if(grid[i]===4)grid[i]=0;secOpen=true;sfx.open();toast('ไขห้องลับของพ่อบ้านได้แล้ว!',2.5)}else toast('🔒 ห้องลับของพ่อบ้าน ต้องหากุญแจก่อน (ลองหาในห้องใต้ดิน)',2.8);return true}
+ const nl=u.v===5?lv+1:lv-1,t=(nl===0||(nl===1&&u.v===5))?[40,26]:[24,14];
+ for(const e of ENS)if(e.lv===lv&&e.mode==='chase'&&e.stun<=0&&Math.hypot(e.x-P.x,e.y-P.y)<170){e.fl=nl;e.ft=1.5;e.at=t}
+ setLv(nl);const p=freeNear(t[0],t[1]+1);P.x=p.x;P.y=p.y;sfx.hide();toast(['ลงมาห้องใต้ดิน... มืดและน่ากลัว','ชั้น 1','ชั้น 2'][nl],2);return true}
+function dHK(){const mov=HK.anim!==HK._la;HK._la=HK.anim;const spr=SP.hk[HK.dir][mov?Math.floor(HK.anim)%4:0];ctx.fillStyle='rgba(0,0,0,.38)';ctx.fillRect(Math.round(HK.x-5-camera.x),Math.round(HK.y-1-camera.y),10,3);ctx.drawImage(spr,Math.round(HK.x-9-camera.x),Math.round(HK.y-22-camera.y));if(HK.mode==='chase')R(ctx,'#ffd84a',Math.round(HK.x-1-camera.x),Math.round(HK.y-34-camera.y),3,7)}
 function newGame(){
-  buildMap();gateOpen=false;lives=3;keysGot=0;playT=0;grace=3.5;flashA=0;petals=[];visited=new Set();
-  const p=freeNear(44,9);P.x=p.x;P.y=p.y;P.dir=2;P.hidden=false;P.spot=null;P.stam=100;P.exh=false;P.inv=0;
-  patrol=RN.map(r=>freeNear(r.x+(r.w>>1),r.y+(r.h>>1)));
-  Object.assign(S,freeNear(8,8),{mode:'idle',lost:0,last:null,hunch:null,hunchT:0,dashCd:6,t:0,aim:null,stun:0,cool:0,bub:null,bubT:0,dir:0,rp:0});
-  Object.assign(E,freeNear(42,28),{mode:'patrol',lost:0,last:null,wait:0,tgt:null,stun:0,cool:0,bub:null,bubT:0,dir:0,rp:0});
-  $('bubbles').innerHTML='';S.bub=null;E.bub=null;
-  keyList=[];
-  const order=[0,1,2,3,4,5,6,7,8].sort(()=>Math.random()-.5).slice(0,TOTALKEYS);
-  order.forEach(ri=>{const r=RN[ri];let tx,ty,n=0;do{tx=r.x+rnd(r.w);ty=r.y+rnd(r.h);n++}while((grid[ty*MW+tx]!==0)&&n<200);keyList.push({tx,ty,got:false,ri})});
-  updateHud();
+ buildAll();gateOpen=false;secOpen=false;hasSK=false;lives=3;keysGot=0;playT=0;grace=3.5;flashA=0;petals=[];V=[new Set(),new Set(),new Set()];
+ PAT=[];for(let l=0;l<3;l++){setLv(l);PAT[l]=RN.map(r=>freeNear(r.x+(r.w>>1),r.y+(r.h>>1)))}
+ PAT[2][8]=PAT[2][4];keyList=[];
+ [[1,0],[1,3],[2,2],[2,5],[2,8],[0,1,1]].forEach(([l,ri,sk])=>{setLv(l);const r=RN[ri];let tx,ty,n=0;do{tx=r.x+rnd(r.w);ty=r.y+rnd(r.h);n++}while(grid[ty*MW+tx]!==0&&n<200);keyList.push({tx,ty,got:false,ri,lv:l,sk})});
+ const base={mode:'patrol',lost:0,last:null,wait:0,tgt:null,stun:0,cool:0,bub:null,bubT:0,dir:0,rp:0,pt:-1,pc:-1,nx:null,anim:0,fl:undefined,ft:0};
+ setLv(2);Object.assign(S,freeNear(8,18),{lv:2,mode:'idle',lost:0,last:null,hunch:null,hunchT:0,dashCd:6,t:0,aim:null,stun:0,cool:0,bub:null,bubT:0,dir:0,rp:0,fl:undefined,ft:0});
+ Object.assign(HK,freeNear(38,8),base,{lv:2});
+ setLv(1);Object.assign(E,freeNear(42,28),base,{lv:1,ek:1,dT:0,dC:4});
+ $('bubbles').innerHTML='';ENS.forEach(e=>e.bub=null);
+ setLv(2);const p=freeNear(8,6);P.x=p.x;P.y=p.y;P.dir=0;P.hidden=false;P.spot=null;P.stam=100;P.exh=false;P.inv=0;
+ updateHud();
 }
 
 /* ============ INPUT ============ */
 const kmap=e=>{let k=e.key.toLowerCase();if(k===' ')k='space';return k};
 addEventListener('keydown',e=>{
   const k=kmap(e);
+  if(capturing){e.preventDefault();KB[capturing]=k;capturing=null;saveKB();buildKB();return}
   if(['arrowup','arrowdown','arrowleft','arrowright','space'].includes(k))e.preventDefault();
   if(e.repeat)return;
   inp.add(k);
-  if(state==='play'&&(k==='e'||k==='space'))hideReq=true;
-  if(k==='m')toggleMute();
+  if(state==='play'&&(k===KB.use||k==='space'))hideReq=true;
+  if(k==='m')toggleMute();if((k===KB.pause||k==='p')&&!editing&&!$('settings').classList.contains('on'))setPause(state==='play');
   if(k==='enter'){if(state==='title')start();else if(state==='over'||state==='win')start()}
 });
 addEventListener('keyup',e=>inp.delete(kmap(e)));
 addEventListener('blur',()=>inp.clear());
 function toggleMute(){muted=!muted;$('muteBtn').textContent=(muted?'🔇':'🔊')+' M'}
 $('muteBtn').onclick=toggleMute;
-function start(){ac();newGame();state='play';['title','over','win'].forEach(i=>$(i).classList.remove('on'));toast('หากุญแจ 5 ดอก แล้วหนีออกทางประตูใหญ่ด้านล่าง!',4)}
-$('startBtn').onclick=start;$('retryBtn').onclick=start;$('againBtn').onclick=start;
+function start(){ac();$('pname').blur();SP.me=gender==='f'?SP.meF:SP.meM;PN=$('pname').value.trim()||(gender==='f'?'หญิง':'ชาย');newGame();state='play';['title','over','win'].forEach(i=>$(i).classList.remove('on'));toast(PN+' ตื่นขึ้นมาในห้องนอน... หากุญแจ 5 ดอก แล้วหนีออกประตูใหญ่ชั้น 1!',5)}
+$('startBtn').onclick=start;$('gM').onclick=()=>{gender='m';SP.me=SP.meM;portrait('pvM','me');$('gM').classList.add('on');$('gF').classList.remove('on')};$('gF').onclick=()=>{gender='f';$('gF').classList.add('on');$('gM').classList.remove('on')};$('retryBtn').onclick=start;$('againBtn').onclick=start;
 
-/* touch */
-const coarse=matchMedia('(pointer:coarse)').matches||'ontouchstart' in window;
-if(coarse)$('touch').classList.add('on');
-const jb=$('joyBase'),jk=$('joyKnob');
-addEventListener('touchstart',e=>{
-  for(const t of e.changedTouches){
-    if(t.target.closest&&t.target.closest('.tbtn,button'))continue;
-    if(!joy&&t.clientX<innerWidth*.6){joy={id:t.identifier,ox:t.clientX,oy:t.clientY,dx:0,dy:0};jb.style.display='block';jb.style.left=t.clientX+'px';jb.style.top=t.clientY+'px';jk.style.transform='translate(-50%,-50%)'}
-  }
-},{passive:true});
-addEventListener('touchmove',e=>{
-  for(const t of e.changedTouches)if(joy&&t.identifier===joy.id){
-    let dx=t.clientX-joy.ox,dy=t.clientY-joy.oy;const l=Math.hypot(dx,dy),m=45;
-    if(l>m){dx=dx/l*m;dy=dy/l*m}
-    joy.dx=dx/m;joy.dy=dy/m;jk.style.transform='translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px))';
-  }
-},{passive:true});
-const tend=e=>{for(const t of e.changedTouches)if(joy&&t.identifier===joy.id){joy=null;jb.style.display='none'}};
-addEventListener('touchend',tend);addEventListener('touchcancel',tend);
-$('btnRun').addEventListener('touchstart',e=>{e.preventDefault();runBtn=true},{passive:false});
-$('btnRun').addEventListener('touchend',e=>{e.preventDefault();runBtn=false},{passive:false});
-$('btnHide').addEventListener('touchstart',e=>{e.preventDefault();if(state==='play')hideReq=true},{passive:false});
+function setPause(p){if(p&&state==='play'){state='pause';$('pause').classList.add('on')}else if(!p&&state==='pause'){state='play';$('pause').classList.remove('on')}}
+$('menuBtn').onclick=()=>setPause(true);$('resumeBtn').onclick=()=>setPause(false);
+$('restartBtn').onclick=()=>{$('pause').classList.remove('on');start()};$('exitBtn').onclick=()=>{location.href='index.html'};
+let coarse=false;
+const pick=m=>{SP.me=gender==='f'?SP.meF:SP.meM;portrait('pvM','me');coarse=m;$('touch').classList.toggle('on',m);$('dev').classList.remove('on');$('title').classList.add('on')};
+$('devPC').onclick=()=>pick(false);$('devMob').onclick=()=>pick(true);
+/* controls */
+const CT={joy:$('joyBase'),run:$('btnRun'),hand:$('btnHide')},DEFL={joy:[.13,.76],run:[.9,.86],hand:[.8,.62]};
+let LY=JSON.parse(JSON.stringify(DEFL)),LYbak='',editing=false;
+try{const sv=JSON.parse(localStorage.getItem('shiori_layout'));if(sv&&sv.joy&&sv.run&&sv.hand)LY=sv}catch(_){}
+function applyLY(){for(const k in CT){CT[k].style.left=LY[k][0]*innerWidth+'px';CT[k].style.top=LY[k][1]*innerHeight+'px'}}
+addEventListener('resize',applyLY);applyLY();
+function joyMove(e){const r=CT.joy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const l=Math.hypot(dx,dy),m=50;if(l>m){dx=dx/l*m;dy=dy/l*m}joy={dx:dx/m,dy:dy/m};$('joyKnob').style.transform='translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px))'}
+for(const k in CT){const el=CT[k];
+ el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);el._id=e.pointerId;
+  if(editing){el._drag=1;return}
+  if(k==='joy')joyMove(e);else if(k==='run'){runBtn=true;el.style.background='rgba(255,255,255,.35)'}else if(state==='play')hideReq=true});
+ el.addEventListener('pointermove',e=>{if(el._id!==e.pointerId)return;
+  if(editing){if(el._drag){LY[k]=[clamp(e.clientX/innerWidth,.05,.95),clamp(e.clientY/innerHeight,.08,.95)];applyLY()}}
+  else if(k==='joy')joyMove(e)});
+ const up=e=>{if(el._id!==e.pointerId)return;el._id=null;el._drag=0;if(k==='joy'){joy=null;$('joyKnob').style.transform='translate(-50%,-50%)'}if(k==='run'){runBtn=false;el.style.background=''}};
+ el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up)}
+/* settings */
+const KN={up:'เดินขึ้น',down:'เดินลง',left:'เดินซ้าย',right:'เดินขวา',run:'วิ่ง',use:'ใช้/ซ่อน',pause:'พักเกม'},KDEF={up:'w',down:'s',left:'a',right:'d',run:'shift',use:'e',pause:'escape'};
+function buildKB(){$('kbList').innerHTML=Object.keys(KN).map(a=>'<div style="margin:4px"><span style="display:inline-block;width:110px;text-align:right">'+KN[a]+'</span> <button class="gb" data-a="'+a+'">'+(capturing===a?'กดคีย์ใหม่...':KB[a])+'</button></div>').join('');
+ $('kbList').querySelectorAll('button').forEach(b=>b.onclick=()=>{capturing=b.dataset.a;buildKB()})}
+const saveKB=()=>{try{localStorage.setItem('shiori_keys',JSON.stringify(KB))}catch(_){}};
+$('setBtn').onclick=()=>{$('pause').classList.remove('on');$('settings').classList.add('on');$('setMob').style.display=coarse?'block':'none';$('setPC').style.display=coarse?'none':'block';buildKB()};
+$('setBack').onclick=()=>{capturing=null;$('settings').classList.remove('on');$('pause').classList.add('on')};
+$('setReset').onclick=()=>{if(coarse){LY=JSON.parse(JSON.stringify(DEFL));applyLY();try{localStorage.removeItem('shiori_layout')}catch(_){}}else{KB={...KDEF};capturing=null;saveKB();buildKB()}};
+const endEdit=()=>{editing=false;$('touch').classList.remove('edit');$('editBar').style.display='none';$('settings').classList.add('on')};
+$('editBtn').onclick=()=>{LYbak=JSON.stringify(LY);editing=true;$('settings').classList.remove('on');$('touch').classList.add('edit');$('editBar').style.display='block'};
+$('eSave').onclick=()=>{try{localStorage.setItem('shiori_layout',JSON.stringify(LY))}catch(_){}endEdit()};
+$('eReset').onclick=()=>{LY=JSON.parse(JSON.stringify(DEFL));applyLY()};
+$('eCancel').onclick=()=>{LY=JSON.parse(LYbak);applyLY();endEdit()};
 
 /* ============ GAME LOGIC ============ */
 function nearestSpot(){
@@ -438,7 +508,7 @@ function nearestSpot(){
   for(const it of items)if(it.hide){const d=Math.hypot(P.x-(it.x*T+8),P.y-(it.y*T+8));if(d<bd){bd=d;best=it}}
   return best;
 }
-function toggleHide(){
+function toggleHide(){if(!P.hidden&&tryUse())return;
   if(P.hidden){
     const it=P.spot;P.hidden=false;
     const nb=[[0,1],[0,-1],[-1,0],[1,0]];
@@ -446,14 +516,14 @@ function toggleHide(){
     P.spot=null;sfx.hide();return;
   }
   const it=nearestSpot();if(!it)return;
-  for(const e of[S,E]){const d=Math.hypot(e.x-P.x,e.y-P.y);if(d<45||(d<230&&hasLOS(e,P))){toast('มีคนเห็นคุณอยู่! ซ่อนตอนนี้ไม่ได้',1.6);return}}
+  for(const e of ENS){if(e.lv!==lv)continue;const d=Math.hypot(e.x-P.x,e.y-P.y);if(d<45||(d<230&&hasLOS(e,P))){toast('แอบต่อหน้าเขา! โดนจับอยู่ดี!',1.6);caught(e);return}}
   P.hidden=true;P.spot=it;P.x=it.x*T+8;P.y=it.y*T+8;sfx.hide();
 }
 function caught(by){
   if(P.inv>0)return;
   lives--;sfx.hit();flashA=.7;shake=.4;
   if(P.hidden){P.hidden=false;P.spot=null}
-  if(by===S)say(S,['ได้ตัวแล้วนะคะ ♡','จับได้แล้ว~','ห้ามหนีอีกนะ!'][rnd(3)],2);else say(E,'ขออภัยขอรับ นี่เป็นพระประสงค์ขององค์หญิง',2);
+  if(by===S)say(S,['ได้ตัวแล้วนะคะ รูบี้ ♡','จับได้แล้ว~','ห้ามหนีอีกนะ!'][rnd(3)],2);else say(E,'ขออภัยขอรับ นี่เป็นพระประสงค์ขององค์หญิง',2);
   updateHud();
   if(lives<=0){
     state='over';
@@ -462,9 +532,7 @@ function caught(by){
     return;
   }
   P.inv=3;
-  const far=patrol.map(p=>({p,d:Math.hypot(p.x-P.x,p.y-P.y)})).sort((a,b)=>b.d-a.d);
-  Object.assign(S,{x:far[0].p.x,y:far[0].p.y,mode:'idle',stun:2,last:null,lost:0,t:0});
-  Object.assign(E,{x:far[1].p.x,y:far[1].p.y,mode:'patrol',stun:2,last:null,tgt:null});
+  ENS.forEach(e=>{e.stun=3;e.last=null;e.lost=0;e.tgt=null;e.mode=e===S?'idle':'patrol'});P.inv=3.5;
   toast('เหลือหัวใจ '+lives+' ดวง!',2);
 }
 function updateHud(){
@@ -472,11 +540,11 @@ function updateHud(){
   $('keysTxt').textContent='🗝 กุญแจ '+keysGot+'/'+TOTALKEYS;
 }
 function update(dt){
-  playT+=dt;if(grace>0)grace-=dt;if(P.inv>0)P.inv-=dt;
+  playT+=dt;$('ekst').textContent=E.dT>0?'⚡ เอกกำลังพุ่ง!':E.dC>0?'เอกพุ่งอีกครั้งใน '+Math.ceil(E.dC)+' วิ':'⚡ เอกพร้อมพุ่ง';if(grace>0)grace-=dt;if(P.inv>0)P.inv-=dt;
   // --- player
   let ix=0,iy=0;
-  if(inp.has('a')||inp.has('arrowleft'))ix-=1;if(inp.has('d')||inp.has('arrowright'))ix+=1;
-  if(inp.has('w')||inp.has('arrowup'))iy-=1;if(inp.has('s')||inp.has('arrowdown'))iy+=1;
+  if(inp.has(KB.left)||inp.has('arrowleft'))ix-=1;if(inp.has(KB.right)||inp.has('arrowright'))ix+=1;
+  if(inp.has(KB.up)||inp.has('arrowup'))iy-=1;if(inp.has(KB.down)||inp.has('arrowdown'))iy+=1;
   if(joy&&Math.hypot(joy.dx,joy.dy)>.2){ix=joy.dx;iy=joy.dy}
   if(hideReq){hideReq=false;toggleHide()}
   P.mv=false;P.spr=false;
@@ -484,7 +552,7 @@ function update(dt){
     const l=Math.hypot(ix,iy);
     if(l>.15){
       ix/=l;iy/=l;P.mv=true;
-      const want=inp.has('shift')||runBtn;
+      const want=inp.has(KB.run)||runBtn;
       P.spr=want&&!P.exh&&P.stam>0;
       const sp=P.spr?112:72;
       const m=moveE(P,ix*sp*dt,iy*sp*dt);
@@ -494,23 +562,23 @@ function update(dt){
   }
   if(P.spr){P.stam-=36*dt;if(P.stam<=0){P.stam=0;P.exh=true}}else{P.stam=Math.min(100,P.stam+15*dt);if(P.exh&&P.stam>=30)P.exh=false}
   $('stamFill').style.width=P.stam+'%';$('stamFill').style.background=P.exh?'#e05050':'#59e08a';
-  visited.add(roomIdx(Math.floor(P.x/T),Math.floor(P.y/T)));
+  V[lv].add(roomIdx(Math.floor(P.x/T),Math.floor(P.y/T)));
   // --- keys
-  for(const k of keyList)if(!k.got&&Math.hypot(P.x-(k.tx*T+8),P.y-(k.ty*T+8))<10){
-    k.got=true;keysGot++;sfx.key();updateHud();
+  for(const k of keyList)if(!k.got&&k.lv===lv&&Math.hypot(P.x-(k.tx*T+8),P.y-(k.ty*T+8))<10){
+    k.got=true;if(k.sk){hasSK=true;sfx.key();toast('ได้กุญแจห้องลับของพ่อบ้าน!',3);continue}keysGot++;sfx.key();updateHud();
     if(keysGot>=TOTALKEYS){gateOpen=true;sfx.open();toast('ประตูใหญ่เปิดแล้ว! รีบวิ่งไปที่ทางออกด้านล่าง!',4)}
     else toast('ได้กุญแจ '+keysGot+'/'+TOTALKEYS,1.5);
   }
   // --- hint
   let hint='';
-  if(P.hidden)hint=coarse?'แตะ "ซ่อน" เพื่อออก':'กด E เพื่อออกจากตู้';else if(nearestSpot())hint=coarse?'แตะ "ซ่อน" เพื่อซ่อนตัว':'กด E เพื่อซ่อนในตู้';
-  const hn=$('hint');if(hint){hn.textContent=hint;hn.classList.add('on')}else hn.classList.remove('on');
+  if(P.hidden)hint=coarse?'แตะปุ่ม ✋ เพื่อออก':'กด E เพื่อออกจากตู้';else if(nearestSpot())hint=coarse?'แตะปุ่ม ✋ เพื่อซ่อนตัว':'กด E เพื่อซ่อนในตู้';
+  if(!hint&&!P.hidden&&nearUse())hint=coarse?'แตะปุ่ม ✋ เพื่อใช้งาน':'กด E เพื่อใช้งาน';const hn=$('hint');if(hint){hn.textContent=hint;hn.classList.add('on')}else hn.classList.remove('on');
   // --- Shiori
-  updShiori(dt);updEk(dt);
+  if(S.lv===lv)updShiori(dt);if(E.lv===lv)updEk(E,dt);if(HK.lv===lv)updEk(HK,dt);for(const e of ENS)if(e.fl!==undefined&&e.ft>0){e.ft-=dt;if(e.ft<=0){if(e.fl===lv){e.lv=lv;Object.assign(e,freeNear(e.at[0],e.at[1]+1),{mode:'chase',last:{x:P.x,y:P.y},lost:0,stun:.6})}e.fl=undefined}}
   // --- catches
   if(state!=='play')return;
-  for(const e of[S,E]){
-    if(e.stun>0)continue;
+  for(const e of ENS){
+    if(e.stun>0||e.lv!==lv)continue;
     if(P.hidden){if(Math.hypot(e.x-P.x,e.y-P.y)<19&&e.mode!=='telegraph'&&grace<=0){caught(e);break}}
     else if(Math.hypot(e.x-P.x,e.y-P.y)<11&&P.inv<=0){caught(e);break}
   }
@@ -518,11 +586,11 @@ function update(dt){
   if(state==='play'&&gateOpen&&tileAt(P.x,P.y)===3){
     state='win';sfx.win();
     const m=Math.floor(playT/60),s=Math.floor(playT%60);
-    $('winTxt').innerHTML='คุณหนีออกจากคฤหาสน์ได้สำเร็จ!<br>เวลา '+m+':'+String(s).padStart(2,'0')+' • หัวใจเหลือ '+lives+' ดวง<br><small>Shiori: "ไว้เจอกันใหม่นะคะ... ที่รัก ♡"</small>';
+    $('winTxt').innerHTML='คุณหนีออกจากคฤหาสน์ได้สำเร็จ!<br>เวลา '+m+':'+String(s).padStart(2,'0')+' • หัวใจเหลือ '+lives+' ดวง<br><small>Shiori: "ไว้เจอกันใหม่นะคะ... รูบี้ ♡"</small>';
     $('win').classList.add('on');
   }
   // --- danger / heartbeat
-  const md=Math.min(Math.hypot(S.x-P.x,S.y-P.y),Math.hypot(E.x-P.x,E.y-P.y));
+  const md=Math.min(999,...ENS.filter(e=>e.lv===lv).map(e=>Math.hypot(e.x-P.x,e.y-P.y)));
   $('danger').style.opacity=clamp(1-(md-35)/120,0,.85)*(state==='play'?1:0);
   if(md<110&&grace<=0){beatT-=dt;if(beatT<=0){sfx.beat();beatT=.35+md/110*.7}}
   // --- music
@@ -559,7 +627,7 @@ function updShiori(dt){
   const los=!P.hidden&&d<200&&hasLOS(S,P);
   const hear=!P.hidden&&d<(P.spr?105:55);
   if(los||hear){
-    if(S.mode!=='chase'&&S.cool<=0){say(S,['ไปไหนคะ~ ♡','เจอตัวแล้วนะ!','มาเล่นกับฉันสิ~','อย่าหนีสิคะ ♡'][rnd(4)],1.6);S.cool=5;sfx.alert()}
+    if(S.mode!=='chase'&&S.cool<=0){say(S,['รูบี้~ ไปไหนคะ ♡','เจอตัวแล้วนะ รูบี้!','มาเล่นกับฉันสิ รูบี้~','อย่าหนีสิคะ รูบี้ ♡'][rnd(4)],1.6);S.cool=5;sfx.alert()}
     S.mode='chase';S.last={x:P.x,y:P.y};S.lost=0;
   }
   if(los&&d<130&&d>40&&S.dashCd<=0){S.mode='telegraph';S.t=.55;say(S,'ไม่ให้หนีหรอกนะคะ~ ♡',1.2);sfx.alert();return}
@@ -567,7 +635,7 @@ function updShiori(dt){
   if(los||hear){steer(S,P.x,P.y,bs,dt);return}
   if(S.last){
     if(Math.hypot(S.x-S.last.x,S.y-S.last.y)<9){S.last=null;S.hunch=null;S.hunchT=0;S.mode='search';
-      if(S.cool<=0){say(S,['อยู่ไหนน้า~','ออกมาเถอะค่ะ ฉันไม่กัดหรอก~','ได้ยินเสียงหัวใจเธอนะ ♡'][rnd(3)],1.8);S.cool=5}}
+      if(S.cool<=0){say(S,['รูบี้ อยู่ไหนน้า~','ออกมาเถอะค่ะ รูบี้ ฉันไม่กัดหรอก~','ได้ยินเสียงหัวใจเธอนะ รูบี้ ♡'][rnd(3)],1.8);S.cool=5}}
     else{steer(S,S.last.x,S.last.y,bs*.95,dt);return}
   }
   S.hunchT-=dt;
@@ -578,16 +646,16 @@ function updShiori(dt){
   }
   steer(S,S.hunch.x,S.hunch.y,bs*.82,dt);
 }
-function updEk(dt){
+function updEk(E,dt){
   if(E.cool>0)E.cool-=dt;
   if(E.stun>0){E.stun-=dt;return}
   if(grace>0)return;
   const d=Math.hypot(E.x-P.x,E.y-P.y);
   const sees=!P.hidden&&d<150&&hasLOS(E,P);
-  const sp=66+keysGot*3;
+  let sp=66+keysGot*3;if(E.ek){if(E.dT>0){E.dT-=dt;sp=190;if(E.dT<=0)E.dC=10}else{E.dC-=dt;if(sees&&E.dC<=0&&d>40&&d<150){E.dT=3;say(E,'พุ่ง!',1.2);sfx.alert()}}}
   if(sees){
     if(E.mode!=='chase'){
-      if(E.cool<=0){say(E,['หยุดก่อนขอรับ!','องค์หญิงรับสั่งให้พาท่านกลับขอรับ','ท่านไปไหนไม่ได้แล้วขอรับ'][rnd(3)],1.8);E.cool=5;sfx.alert()}
+      if(E.cool<=0){say(E,['หยุดก่อนขอรับ คุณ'+PN+'!','องค์หญิงรับสั่งให้พาท่านกลับขอรับ','ท่านไปไหนไม่ได้แล้วขอรับ'][rnd(3)],1.8);E.cool=5;sfx.alert()}
       // แจ้งองค์หญิง
       if(S.mode!=='telegraph'&&S.mode!=='dash'&&S.mode!=='chase'){S.last={x:P.x,y:P.y};S.mode='search'}
     }
@@ -602,7 +670,7 @@ function updEk(dt){
   if(E.wait>0){E.wait-=dt;return}
   if(!E.tgt||Math.hypot(E.x-E.tgt.x,E.y-E.tgt.y)<9){
     if(E.tgt)E.wait=1.2;
-    E.tgt=patrol[rnd(patrol.length)];
+    E.tgt=PAT[E.lv][rnd(9)];
   }
   steer(E,E.tgt.x,E.tgt.y,40+keysGot*2,dt);
 }
@@ -721,17 +789,17 @@ function render(){
     } else if(v===3){
       ctx.drawImage(wallCap,px,py);
     } else {
-      ctx.drawImage(floorT[RN[roomIdx(tx,ty)].th][(tx+ty)&1],px,py);
+      const ri=roomIdx(tx,ty);ctx.drawImage(floorT[lv===0?8:lv===2?(ri%2?3:1):RN[ri].th][(tx+ty)&1],px,py);if(v===4){R(ctx,'#4a2a1a',px,py,16,16);R(ctx,'#e04a4a',px+6,py+6,4,4)}else if(v>4){for(let i=0;i<4;i++)R(ctx,i%2?'#8a6ab8':'#e8dcff',px,py+i*4,16,3)}
     }
   }
-  drawGate();
+  if(lv===1)drawGate();
   // entity list
   const list=[];
   for(const it of items)list.push({y:(it.y+it.h)*T,f:()=>drawItem(it)});
-  for(const k of keyList)if(!k.got)list.push({y:k.ty*T+14,f:()=>drawKey(k)});
+  for(const k of keyList)if(!k.got&&k.lv===lv)list.push({y:k.ty*T+14,f:()=>drawKey(k)});
   const eShow=state!=='title';
   if(eShow){
-    list.push({y:S.y,f:()=>{
+    if(S.lv===lv)list.push({y:S.y,f:()=>{
       const mov=S.mode==='dash'||(S.anim!==S._la);S._la=S.anim;
       const fr=mov?[0,1,2,3][Math.floor(S.anim)%4]:0;
       const spr=SP.shiori[S.dir][fr];
@@ -739,7 +807,7 @@ function render(){
       ctx.drawImage(spr,Math.round(S.x-9-camera.x),Math.round(S.y-22-camera.y));
       if(S.mode==='telegraph'){R(ctx,'#ff2a6a',Math.round(S.x-1-camera.x),Math.round(S.y-34-camera.y),3,7);R(ctx,'#ff2a6a',Math.round(S.x-1-camera.x),Math.round(S.y-25-camera.y),3,2)}
     }});
-    list.push({y:E.y,f:()=>{
+    if(E.lv===lv)list.push({y:E.y,f:()=>{
       const mov=E.anim!==E._la;E._la=E.anim;
       const fr=mov?[0,1,2,3][Math.floor(E.anim)%4]:0;
       const spr=SP.ek[E.dir][fr];
@@ -756,27 +824,27 @@ function render(){
       ctx.drawImage(spr,Math.round(P.x-9-camera.x),Math.round(P.y-22-camera.y));
     }});
   }
-  list.sort((a,b)=>a.y-b.y);
+  if(eShow&&HK.lv===lv)list.push({y:HK.y,f:dHK});list.sort((a,b)=>a.y-b.y);
   for(const o of list)o.f();
   for(const p of petals){R(ctx,p.t>.5?'#ff9cc6':'#e0709e',Math.round(p.x-camera.x),Math.round(p.y-camera.y),2,1)}
   // darkness
   dg.globalCompositeOperation='source-over';dg.clearRect(0,0,W,H);
-  dg.fillStyle='rgba(8,3,18,.82)';dg.fillRect(0,0,W,H);
+  dg.fillStyle=lv===0?'rgba(2,0,6,.97)':'rgba(8,3,18,.82)';dg.fillRect(0,0,W,H);
   dg.globalCompositeOperation='destination-out';
   const hole=(x,y,rad,a)=>{dg.fillStyle='rgba(0,0,0,'+a+')';dg.beginPath();dg.arc(Math.round(x),Math.round(y),rad,0,6.2832);dg.fill()};
-  const pl=P.hidden?0.6:1;
+  const pl=(P.hidden?0.6:1)*(lv===0?.5:1);
   [[135,.22],[108,.25],[82,.3],[58,.5]].forEach(([r,a])=>hole(P.x-camera.x,P.y-12-camera.y,r*pl,a));
   if(eShow){
-    [[34,.3],[22,.45]].forEach(([r,a])=>hole(S.x-camera.x,S.y-12-camera.y,r,a));
-    [[16,.3]].forEach(([r,a])=>hole(E.x-camera.x,E.y-12-camera.y,r,a));
+    S.lv===lv&&[[34,.3],[22,.45]].forEach(([r,a])=>hole(S.x-camera.x,S.y-12-camera.y,r,a));
+    ENS.slice(1).forEach(e=>e.lv===lv&&hole(e.x-camera.x,e.y-12-camera.y,16,.3));
   }
-  for(const k of keyList)if(!k.got){hole(k.tx*T+8-camera.x,k.ty*T+8-camera.y,18,.3);hole(k.tx*T+8-camera.x,k.ty*T+8-camera.y,10,.4)}
+  for(const k of keyList)if(!k.got&&k.lv===lv){hole(k.tx*T+8-camera.x,k.ty*T+8-camera.y,18,.3);hole(k.tx*T+8-camera.x,k.ty*T+8-camera.y,10,.4)}
   for(const it of items){if(it.type==='fire')hole(it.x*T+16-camera.x,it.y*T+8-camera.y,55,.45)}
-  if(gateOpen){hole(24*T+8-camera.x,(MH-1)*T-camera.y,60,.6)}
+  if(gateOpen&&lv===1){hole(24*T+8-camera.x,(MH-1)*T-camera.y,60,.6)}
   dg.globalCompositeOperation='source-over';
   ctx.drawImage(dk,0,0);
   // exit arrow
-  if(gateOpen&&state==='play'){
+  if(gateOpen&&state==='play'&&lv===1){
     const gx=24*T+8,gy=(MH-1)*T+8,a=Math.atan2(gy-P.y,gx-P.x),d=Math.hypot(gx-P.x,gy-P.y);
     if(d>40){
       const ax=P.x-camera.x+Math.cos(a)*26,ay=P.y-14-camera.y+Math.sin(a)*26+Math.sin(tm*8)*1.5;
@@ -786,7 +854,7 @@ function render(){
   }
   // overlay bubbles & flash
   const bs=SC;
-  for(const e of[S,E])if(e.bub){
+  for(const e of ENS)if(e.bub&&e.lv===lv){
     e.bubT-=1/60;
     if(e.bubT<=0){e.bub.remove();e.bub=null;continue}
     e.bub.style.left=((e.x-camera.x)*bs+(innerWidth-W*bs)/2)+'px';
@@ -796,7 +864,7 @@ function render(){
   $('flash').style.opacity=Math.max(0,flashA);
   // minimap + room name
   drawMini();
-  const ri=roomIdx(Math.floor(P.x/T),Math.floor(P.y/T));$('roomName').textContent=RN[ri].n;
+  const ri=roomIdx(Math.floor(P.x/T),Math.floor(P.y/T));$('roomName').textContent=['ใต้ดิน','ชั้น 1','ชั้น 2'][lv]+' • '+NMS[lv][ri];
 }
 const mini=$('mini'),mg=mini.getContext('2d');
 function drawMini(){
@@ -805,13 +873,13 @@ function drawMini(){
     const v=grid[y*MW+x];
     if(v===1){mg.fillStyle='#4a3a66';mg.fillRect(x*2,y*2,2,2)}
     else if(v===3){mg.fillStyle=gateOpen?'#ffe27a':'#9a6a3a';mg.fillRect(x*2,y*2,2,2)}
-    else if(visited.has(roomIdx(x,y))){mg.fillStyle=v===2?'#3a2a50':'#1f1633';mg.fillRect(x*2,y*2,2,2)}
+    else if(V[lv].has(roomIdx(x,y))){mg.fillStyle=v===2?'#3a2a50':'#1f1633';mg.fillRect(x*2,y*2,2,2)}
   }
-  for(const k of keyList)if(!k.got&&visited.has(roomIdx(k.tx,k.ty))){mg.fillStyle='#ffd84a';mg.fillRect(k.tx*2-1,k.ty*2-1,4,4)}
-  const near=e=>Math.hypot(e.x-P.x,e.y-P.y)<130;
+  for(const k of keyList)if(!k.got&&k.lv===lv&&V[lv].has(roomIdx(k.tx,k.ty))){mg.fillStyle='#ffd84a';mg.fillRect(k.tx*2-1,k.ty*2-1,4,4)}
+  const near=e=>e.lv===lv&&Math.hypot(e.x-P.x,e.y-P.y)<130;
   if(state==='play'){
     if(near(S)){mg.fillStyle='#ff5c9a';mg.fillRect(Math.floor(S.x/8)-1,Math.floor(S.y/8)-1,3,3)}
-    if(near(E)){mg.fillStyle='#8a7aff';mg.fillRect(Math.floor(E.x/8)-1,Math.floor(E.y/8)-1,3,3)}
+    if(near(HK)){mg.fillStyle='#4ac';mg.fillRect(Math.floor(HK.x/8)-1,Math.floor(HK.y/8)-1,3,3)}if(near(E)){mg.fillStyle='#8a7aff';mg.fillRect(Math.floor(E.x/8)-1,Math.floor(E.y/8)-1,3,3)}
   }
   mg.fillStyle='#59e0cf';mg.fillRect(Math.floor(P.x/8)-1,Math.floor(P.y/8)-1,3,3);
 }
