@@ -3,51 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>เลือกเล่น | Shiori World</title>
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+<title>เลือกเกมที่อยากเล่น</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}
-:root{color-scheme:dark}
-body{margin:0;min-height:100vh;font-family:'Kanit',Tahoma,sans-serif;color:#fff;background:radial-gradient(ellipse at top,#382052 0%,#171126 48%,#090711 100%);display:grid;place-items:center;padding:24px}
-main{width:min(960px,100%);text-align:center}
-.tag{display:inline-block;padding:6px 14px;border:1px solid #9b76c9;border-radius:99px;color:#e3ceff;background:#ffffff0b;font-size:14px}
-h1{font-size:clamp(32px,6vw,58px);margin:16px 0 8px;line-height:1.15;text-shadow:0 4px 20px #0008}
-h1 span{color:#ff91c8}
-.lead{color:#c9bfd8;line-height:1.8;margin:0 auto 32px;max-width:620px}
-.games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;text-align:left}
-.card{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:330px;padding:26px;border:1px solid #ffffff26;border-radius:24px;background:linear-gradient(145deg,#ffffff12,#ffffff05);box-shadow:0 18px 50px #0005;transition:transform .2s,border-color .2s}
-.card:hover{transform:translateY(-5px);border-color:#e99aca}
-.art{font-size:56px;margin-bottom:12px}
-.card h2{font-size:25px;margin:0 0 8px}
-.card p{color:#d2c8df;line-height:1.7;margin:0 0 24px}
-.game h2{color:#ff9bc9}.quiz h2{color:#aeb6ff}
-a.btn{margin-top:auto;display:block;text-align:center;text-decoration:none;font-weight:800;color:#fff;padding:13px 18px;border-radius:13px;background:linear-gradient(100deg,#a92d69,#e35b9b);box-shadow:0 5px 0 #68163d}
-.quiz a.btn{background:linear-gradient(100deg,#5148b7,#897cf4);box-shadow:0 5px 0 #30276f}
-a.btn:active{transform:translateY(3px);box-shadow:none}
-footer{margin-top:28px;color:#8f849f;font-size:13px}
-@media(max-width:650px){.games{grid-template-columns:1fr}.card{min-height:280px}body{padding:16px}}
+  :root{
+    --bg1:#12051f; --bg2:#2a0b3d; --pink:#ff4fb8; --pink-soft:#ffb3e0;
+    --violet:#a044c9; --card:#241040cc; --line:#6a3fa8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    font-family:'Prompt',sans-serif;
+    color:#fff;
+    background:
+      radial-gradient(ellipse at 20% 10%, #5a1a6e55 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 90%, #ff4fb833 0%, transparent 45%),
+      linear-gradient(160deg,var(--bg1),var(--bg2));
+    background-attachment:fixed;
+    overflow-x:hidden;
+  }
+  /* sparkles */
+  .sparkles{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .sparkles span{
+    position:absolute;color:var(--pink-soft);opacity:.0;
+    animation:twinkle 4s infinite ease-in-out;
+    text-shadow:0 0 8px var(--pink);
+  }
+  @keyframes twinkle{0%,100%{opacity:0;transform:scale(.6)}50%{opacity:.9;transform:scale(1.1)}}
+
+  main{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:56px 20px 40px}
+  header{text-align:center;margin-bottom:44px}
+  header .tag{
+    display:inline-block;font-size:.85rem;letter-spacing:.2em;color:var(--pink-soft);
+    border:1px solid var(--line);padding:4px 14px;border-radius:999px;margin-bottom:16px;
+    background:#ffffff08;
+  }
+  h1{
+    font-size:clamp(2rem,6vw,3.4rem);font-weight:800;line-height:1.15;
+    color:#ffd3ee;
+    text-shadow:0 0 6px var(--pink),0 0 22px var(--pink),0 3px 0 #7a1c63;
+  }
+  header p{margin-top:12px;color:#d7b8ee;font-size:1.05rem}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:26px}
+
+  .card{
+    position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;
+    background:var(--card);border:2px solid var(--line);border-radius:22px;
+    padding:28px 26px 24px;overflow:hidden;
+    backdrop-filter:blur(6px);
+    transition:transform .2s, border-color .2s, box-shadow .2s;
+    outline:none;
+  }
+  .card::before{
+    content:"";position:absolute;inset:0;opacity:0;transition:opacity .25s;
+    background:linear-gradient(135deg,#e0489a55,#a044c955);
+  }
+  .card:hover,.card:focus-visible,.card.active{
+    transform:translateY(-6px);border-color:#fff;
+    box-shadow:0 0 0 2px var(--pink),0 12px 40px #ff4fb855;
+  }
+  .card:hover::before,.card:focus-visible::before,.card.active::before{opacity:1}
+  .card > *{position:relative}
+
+  .icon{
+    width:76px;height:76px;border-radius:50%;display:grid;place-items:center;
+    font-size:2.3rem;margin-bottom:18px;
+    background:radial-gradient(circle at 30% 30%,#ff7ccf,#7b2a9e);
+    box-shadow:0 0 22px #ff4fb877, inset 0 0 12px #ffffff33;
+  }
+  .badge{
+    align-self:flex-start;font-size:.75rem;font-weight:600;padding:3px 12px;border-radius:999px;
+    background:#ff4fb829;color:var(--pink-soft);border:1px solid #ff4fb866;margin-bottom:10px;
+  }
+  .card h2{font-size:1.6rem;font-weight:700;margin-bottom:8px}
+  .card p{color:#d9c3ee;font-size:.98rem;line-height:1.6;flex:1}
+  .play{
+    margin-top:22px;display:flex;align-items:center;justify-content:space-between;
+    padding:12px 18px;border-radius:14px;font-weight:700;font-size:1.05rem;
+    background:linear-gradient(90deg,#e0489a,#a044c9);
+    box-shadow:0 4px 0 #5b1c7a;
+  }
+  .play .arrow{transition:transform .2s}
+  .card:hover .arrow,.card.active .arrow{transform:translateX(6px)}
+
+  footer{text-align:center;margin-top:46px;color:#a98cc4;font-size:.88rem}
+  footer kbd{
+    background:#ffffff14;border:1px solid var(--line);border-radius:6px;padding:1px 8px;margin:0 2px;
+  }
+  @media (prefers-reduced-motion:reduce){.sparkles span{animation:none;opacity:.5}.card{transition:none}}
 </style>
 </head>
 <body>
+<div class="sparkles" id="sparkles"></div>
+
 <main>
-  <div class="tag">🌙 SHIORI WORLD</div>
-  <h1>เลือกสิ่งที่อยาก<span>เล่น</span></h1>
-  <p class="lead">ยินดีต้อนรับ! เลือกเข้าไปเล่นได้เลย แต่ละเกมจะแยกเป็นคนละหน้า กลับมาหน้านี้เพื่อเลือกอีกเกมได้ทุกเมื่อ</p>
-  <section class="games">
-    <article class="card game">
-      <div class="art">🗝️🌹</div>
-      <h2>เกมหนีจากชิโอริ</h2>
-      <p>ติดอยู่ในคฤหาสน์ลึกลับ เก็บกุญแจให้ครบ 5 ดอก หลบผู้ตามล่า และหาทางหนีออกมาให้ได้!</p>
-      <a class="btn" href="shiori-mansion.html">เข้าเล่นเกม →</a>
-    </article>
-    <article class="card quiz">
-      <div class="art">✨🧠</div>
-      <h2>แบบทดสอบบุคลิก</h2>
-      <p>ตอบคำถามเพื่อสำรวจคาแรกเตอร์และแนวบุคลิกแบบอนิเมะของคุณ แล้วดูผลลัพธ์ของตัวเอง</p>
-      <a class="btn" href="แบบทดสอบ1.html">เริ่มทำแบบทดสอบ →</a>
-    </article>
+  <header>
+    <div class="tag">♥ GAME SELECT ♥</div>
+    <h1>เลือกเกมที่อยากเล่น</h1>
+    <p>เลือกได้เลย กดเข้าไปเล่นได้ทันที</p>
+  </header>
+
+  <section class="grid" id="menu">
+    <a class="card" href="shiori-mansion.html">
+      <div class="icon">🏚️</div>
+      <span class="badge">เกมผจญภัย</span>
+      <h2>หนีออกจาก Shiori</h2>
+      <p>หนีไปให้พ้น... ก่อนที่จะสายเกินไป หนีออกจากคฤหาสน์ของ Shiori ให้ได้ก่อนเธอจะตามทัน</p>
+      <div class="play"><span>▶ เริ่มเกม</span><span class="arrow">◀</span></div>
+    </a>
+
+    <a class="card" href="แบบทดสอบ1.html">
+      <div class="icon">🔮</div>
+      <span class="badge">แบบทดสอบ</span>
+      <h2>แบบทดสอบ บุคลิก</h2>
+      <p>ตอบคำถามไม่กี่ข้อ แล้วมาดูกันว่าบุคลิกของคุณเป็นแบบไหน</p>
+      <div class="play"><span>▶ เริ่มทำแบบทดสอบ</span><span class="arrow">◀</span></div>
+    </a>
   </section>
-  <footer>เลือกเกมแล้วสนุกให้เต็มที่ ♡</footer>
+
+  <footer>
+    <kbd>←</kbd><kbd>→</kbd> เลือก • <kbd>Enter</kbd> ยืนยัน
+  </footer>
 </main>
+
+<script>
+  // sparkles background
+  (function(){
+    var box=document.getElementById('sparkles'),chars=['✦','✧','♥','✦','·'];
+    for(var i=0;i<28;i++){
+      var s=document.createElement('span');
+      s.textContent=chars[i%chars.length];
+      s.style.left=Math.random()*100+'%';
+      s.style.top=Math.random()*100+'%';
+      s.style.fontSize=(10+Math.random()*16)+'px';
+      s.style.animationDelay=(Math.random()*4)+'s';
+      s.style.animationDuration=(3+Math.random()*3)+'s';
+      box.appendChild(s);
+    }
+  })();
+
+  // keyboard navigation like the in-game menu
+  (function(){
+    var cards=[].slice.call(document.querySelectorAll('.card')),idx=-1;
+    function set(i){
+      cards.forEach(function(c){c.classList.remove('active')});
+      idx=(i+cards.length)%cards.length;
+      cards[idx].classList.add('active');
+      cards[idx].focus({preventScroll:true});
+    }
+    document.addEventListener('keydown',function(e){
+      if(['ArrowRight','ArrowDown'].indexOf(e.key)>-1){e.preventDefault();set(idx+1)}
+      else if(['ArrowLeft','ArrowUp'].indexOf(e.key)>-1){e.preventDefault();set(idx<0?0:idx-1)}
+      else if(e.key==='Enter' && idx>-1){cards[idx].click()}
+    });
+    cards.forEach(function(c,i){c.addEventListener('mouseenter',function(){set(i)})});
+  })();
+</script>
 </body>
 </html>
