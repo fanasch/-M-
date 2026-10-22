@@ -25,11 +25,18 @@ body{
   overflow:hidden;overscroll-behavior:none;-webkit-user-select:none;user-select:none;
 }
 #app{position:fixed;inset:0;background:var(--bg);touch-action:none}
-#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 #vig{position:absolute;inset:0;pointer-events:none;--d:0;
   background:radial-gradient(ellipse at center,rgba(0,0,0,0) 30%,rgba(0,0,0,.68) 72%,rgba(0,0,0,.96) 100%),
              radial-gradient(ellipse at center,rgba(0,0,0,0) 50%,rgba(150,10,10,calc(var(--d) * .55)) 100%)}
-#stat{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;mix-blend-mode:screen;image-rendering:pixelated}
+#stat{display:none!important}
+#edge{position:absolute;inset:0;pointer-events:none;--ec:70,175,230;--el:0;--er:0;--et:0;--eb:0;--ea:0;
+  background:
+   linear-gradient(to right,rgba(var(--ec),calc(var(--el)*.8)) 0%,rgba(var(--ec),calc(var(--el)*.3)) 7%,rgba(var(--ec),0) 24%),
+   linear-gradient(to left,rgba(var(--ec),calc(var(--er)*.8)) 0%,rgba(var(--ec),calc(var(--er)*.3)) 7%,rgba(var(--ec),0) 24%),
+   linear-gradient(to bottom,rgba(var(--ec),calc(var(--et)*.8)) 0%,rgba(var(--ec),calc(var(--et)*.3)) 9%,rgba(var(--ec),0) 28%),
+   linear-gradient(to top,rgba(var(--ec),calc(var(--eb)*.8)) 0%,rgba(var(--ec),calc(var(--eb)*.3)) 9%,rgba(var(--ec),0) 28%);
+  box-shadow:inset 0 0 calc(var(--ea)*90px) calc(var(--ea)*18px) rgba(var(--ec),calc(var(--ea)*.55))}
 #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
 #cross{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:rgba(210,215,200,.45);pointer-events:none}
 
@@ -220,6 +227,7 @@ body.noblood #splats,body.noblood #bloodOv,body.noblood #redEdge,body.noblood .d
 <div id="app">
   <canvas id="gl"></canvas>
   <div id="vig"></div>
+  <div id="edge"></div>
   <canvas id="stat" width="96" height="96"></canvas>
   <div id="flash"></div>
   <div id="faintDark"></div><div id="lidT" class="lid"></div><div id="lidB" class="lid"></div>
@@ -1918,7 +1926,6 @@ function look(dx,dy,k){
 }
 var dragging=false;
 $('gl').addEventListener('mousedown',function(e){
-  if(state==='spectate'){mpSpecNext();return}
   if(state!=='play')return;
   if(e.button===0)bdUse();
   dragging=true;
@@ -2004,10 +2011,39 @@ function los(ax,az,bx,bz){
 
 /* ---------- update ---------- */
 var statCanvas=$('stat'),statCtx=statCanvas.getContext('2d'),statImg=statCtx.createImageData(96,96);
-function drawStatic(){
-  var d=statImg.data;
-  for(var i=0;i<d.length;i+=4){var v=Math.random()*255|0;d[i]=v;d[i+1]=v;d[i+2]=v;d[i+3]=255}
-  statCtx.putImageData(statImg,0,0);
+function drawStatic(){}     /* TV static removed: replaced by the screen-edge warning below */
+/* ---------- screen-edge warning: the rim of the screen glows on the side Maru is coming from ---------- */
+var EDGE={el:null,on:false,t:0,l:0,r:0,u:0,d:0,a:0,c:''};
+function edgeSet(l,r,u,d,a,c){
+  var e=EDGE.el||(EDGE.el=$('edge'));if(!e)return;
+  var f=function(v){return v<.01?0:Math.round(v*100)/100};
+  l=f(l);r=f(r);u=f(u);d=f(d);a=f(a);
+  if(l!==EDGE.l){EDGE.l=l;e.style.setProperty('--el',l)}
+  if(r!==EDGE.r){EDGE.r=r;e.style.setProperty('--er',r)}
+  if(u!==EDGE.u){EDGE.u=u;e.style.setProperty('--et',u)}
+  if(d!==EDGE.d){EDGE.d=d;e.style.setProperty('--eb',d)}
+  if(a!==EDGE.a){EDGE.a=a;e.style.setProperty('--ea',a)}
+  if(c&&c!==EDGE.c){EDGE.c=c;e.style.setProperty('--ec',c)}
+  EDGE.on=(l+r+u+d+a)>0;
+}
+function edgeFx(dt,dist,danger){
+  EDGE.t+=dt;
+  var near=clamp(1-dist/14,0,1);
+  if(mon.grace>0||near<=0){if(EDGE.on)edgeSet(0,0,0,0,0);return}
+  var k=near*near*.6+near*.4;                              /* grows faster as she closes in */
+  var dx=mon.x-player.x,dz=mon.z-player.z,dl=Math.max(.01,Math.hypot(dx,dz));
+  var fx=-Math.sin(player.yaw),fz=-Math.cos(player.yaw),rx=Math.cos(player.yaw),rz=-Math.sin(player.yaw);
+  var fw=(dx*fx+dz*fz)/dl,rt=(dx*rx+dz*rz)/dl;
+  var pulse=.78+.22*Math.sin(EDGE.t*(3.5+9*near));          /* throbs faster the closer she is */
+  if(near>.5&&Math.random()<.05)pulse*=.35;                 /* nervous flicker */
+  var m=k*pulse*(mon.seen?1:.85);
+  /* the side she is on lights up; when she is right on top of you the whole rim glows */
+  var all=Math.max(0,(near-.55)/.45);
+  var L=m*(Math.max(0,-rt)*.9+all*.8),R=m*(Math.max(0,rt)*.9+all*.8);
+  var U=m*(Math.max(0,fw)*.55+all*.8),D=m*(Math.max(0,-fw)*1.0+all*.8);
+  /* cold teal while she is far away, turning red when she is close */
+  var rr=Math.round(70+130*near),gg=Math.round(175-150*near),bb=Math.round(230-195*near);
+  edgeSet(Math.min(1,L),Math.min(1,R),Math.min(1,U),Math.min(1,D),m*.55*near,rr+','+gg+','+bb);
 }
 
 function updatePlayer(dt){
@@ -3087,6 +3123,7 @@ function updateGame(dt){
     $('arrow').style.transform='rotate('+a+'rad)';
   }
   $('vig').style.setProperty('--d',danger.toFixed(2));
+  edgeFx(dt,dist,danger);
   statT-=dt;
   var so=clamp((danger-.3)*.9,0,.45);so=Math.max(so,scareStat);
   if(mon.seen&&dist<8)so=Math.max(so,.3);
@@ -3805,6 +3842,46 @@ function mpSpecNext(dir){
   MP.spec=c[nx].id;
   if(c.length>1)setMsg('กำลังดู: '+c[nx].name,1800);
 }
+/* ---------- spectator: third-person chase camera (drag / swipe to orbit, wheel to zoom, click or tap to switch player) ---------- */
+var SP={orb:0,pit:.3,dist:3.3,drag:false,lx:0,ly:0,sx:0,sy:0,idle:0,cx:0,cy:0,cz:0,have:false,last:-1};
+function spec3(dt,r){
+  if(SP.last!==r.id){SP.last=r.id;SP.have=false;SP.orb=0}
+  SP.idle+=dt;
+  if(!SP.drag&&SP.idle>2.5)SP.orb+=(0-SP.orb)*Math.min(1,dt*1.2);     /* drifts back behind the player when you let go */
+  var ty=r.hidden?.6:1.28,tx=r.ax,tz=r.az;
+  var a=r.ayaw+Math.PI+SP.orb;                                       /* behind the player's back */
+  var d=SP.dist,cp=Math.cos(SP.pit),sp=Math.sin(SP.pit);
+  /* pull the camera in when a wall is in the way */
+  var hx=tx,hz=tz,dd=d;
+  while(dd>.7&&solidAt(hx+Math.sin(a)*(dd+.3)*cp,hz+Math.cos(a)*(dd+.3)*cp))dd-=.2;
+  var wx=tx+Math.sin(a)*dd*cp,wz=tz+Math.cos(a)*dd*cp,wy=clamp(ty+.35+sp*dd,.35,2.9);
+  if(!SP.have){SP.cx=wx;SP.cy=wy;SP.cz=wz;SP.have=true}
+  var k=Math.min(1,dt*7);
+  SP.cx+=(wx-SP.cx)*k;SP.cy+=(wy-SP.cy)*k;SP.cz+=(wz-SP.cz)*k;
+  camera.position.set(SP.cx,SP.cy,SP.cz);
+  camera.lookAt(tx,ty,tz);
+  spot.intensity=1.5;halo.intensity=.45;ambient.intensity=.5;      /* a soft ghostly light so you can see your friend */
+}
+(function(){
+  var cv=$('gl');
+  cv.addEventListener('pointerdown',function(e){
+    if(state!=='spectate')return;
+    SP.drag=true;SP.lx=SP.sx=e.clientX;SP.ly=SP.sy=e.clientY;SP.idle=0;
+    try{cv.setPointerCapture(e.pointerId)}catch(x){}
+  });
+  cv.addEventListener('pointermove',function(e){
+    if(!SP.drag||state!=='spectate')return;
+    SP.orb-=(e.clientX-SP.lx)*.006;SP.pit=clamp(SP.pit+(e.clientY-SP.ly)*.004,.05,1.15);
+    SP.lx=e.clientX;SP.ly=e.clientY;SP.idle=0;
+  });
+  var up=function(e){
+    if(!SP.drag)return;SP.drag=false;
+    if(state==='spectate'&&Math.hypot(e.clientX-SP.sx,e.clientY-SP.sy)<6)mpSpecNext();
+  };
+  cv.addEventListener('pointerup',up);
+  cv.addEventListener('pointercancel',function(){SP.drag=false});
+  cv.addEventListener('wheel',function(e){if(state!=='spectate')return;SP.dist=clamp(SP.dist+e.deltaY*.003,1.8,6.5);e.preventDefault()},{passive:false});
+})();
 function updateSpectate(dt){
   elapsed+=dt;
   var r=MP.pl[MP.spec];
@@ -3814,9 +3891,7 @@ function updateSpectate(dt){
     r.apt=(r.apt||0)+((r.pitch||0)-(r.apt||0))*Math.min(1,dt*12);
     info=String(r.name).replace(/[<>&]/g,'')+(r.hidden?' (ซ่อนอยู่)':'')+'|ไฟติดแล้ว '+player.keys+'/'+NEED+(MP.doorOpen?' · ประตูเปิดแล้ว':'');
     player.x=r.ax;player.z=r.az;
-    camera.position.set(r.ax,r.hidden?.7:EYE+((r.mv&&!ST.steady)?Math.sin(elapsed*9)*.04:0),r.az);
-    camera.rotation.y=r.ayaw;camera.rotation.x=r.apt;camera.rotation.z=0;
-    spot.intensity=r.lt?3:0;halo.intensity=r.lt?.45:.08;ambient.intensity=r.lt?.55:.2;
+    spec3(dt,r);
   }
   if(!info)info='ไม่มีผู้เล่นให้ดูในตอนนี้|รอเพื่อนๆ หรือรอน้ำมนต์ชุบชีวิต';
   sb.hidden=false;
@@ -4441,6 +4516,7 @@ function frame(now){
   }
   if(wit){try{witUpdate(dt)}catch(e){console.error(e);witEnd()}}
   if(fpv&&state!=='play')fpv.visible=false;
+  if(EDGE.on&&state!=='play')edgeSet(0,0,0,0,0);
   if(state==='play'&&monster)monster.visible=true;
   if(state!=='menu'&&monster&&state!=='paused')monster.visible=true;
   var tt=now/1000;
